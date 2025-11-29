@@ -17,14 +17,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/components/Header.svelte:5
+#. Main welcome message shown on homepage hero section
 msgid "Welcome to our website"
 msgstr "Welcome to our website"
 
 #: src/components/Header.svelte:10
+#. Personalized greeting with user's name
+# Please keep the {name} placeholder as-is
 msgid "Hello, {name}!"
 msgstr "Hello, {name}!"
 
 #: src/components/Navigation.svelte:3
+#. @wc-context: navigation
+msgctxt "navigation"
 msgid "Home"
 msgstr "Home"
 
@@ -40,11 +45,34 @@ msgstr "Contact"
 msgid "Products"
 msgstr "Products"
 
+#: src/components/Navigation.svelte:7
+msgid "Services"
+msgstr "Services"
+
+#: src/components/Navigation.svelte:8
+msgid "Blog"
+msgstr "Blog"
+
+#: src/components/Navigation.svelte:9
+msgid "Pricing"
+msgstr "Pricing"
+
 #: src/components/Footer.svelte:2
+#. Footer copyright notice - {year} will be replaced with current year
+# Keep the {year} placeholder
 msgid "Copyright {year} All rights reserved."
 msgstr "Copyright {year} All rights reserved."
 
+#: src/components/Footer.svelte:5
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
+#: src/components/Footer.svelte:6
+msgid "Terms of Service"
+msgstr "Terms of Service"
+
 #: src/components/Form.svelte:5
+#. Primary action button for form submission
 msgid "Submit"
 msgstr "Submit"
 
@@ -53,5 +81,76 @@ msgid "Cancel"
 msgstr "Cancel"
 
 #: src/components/Form.svelte:15
+#. Email validation error message
+# Shown when user enters invalid email format
 msgid "Please enter a valid email address"
 msgstr "Please enter a valid email address"
+
+#: src/components/Form.svelte:20
+msgid "Password must be at least 8 characters"
+msgstr "Password must be at least 8 characters"
+
+#: src/components/Form.svelte:25
+#. Success message after form submission
+msgid "Your message has been sent successfully!"
+msgstr "Your message has been sent successfully!"
+
+#: src/components/Dashboard.svelte:5
+#. @wc-context: dashboard
+msgctxt "dashboard"
+msgid "Home"
+msgstr "Home"
+
+#: src/components/Dashboard.svelte:10
+#. Dashboard welcome message - shown when user logs in
+# Different from homepage welcome
+msgid "Welcome back!"
+msgstr "Welcome back!"
+
+#: src/components/Dashboard.svelte:15
+msgid "Recent Activity"
+msgstr "Recent Activity"
+
+#: src/components/Dashboard.svelte:20
+msgid "Settings"
+msgstr "Settings"
+
+#: src/components/Dashboard.svelte:25
+msgid "Log out"
+msgstr "Log out"
+
+#: src/components/Cart.svelte:5
+#. Shopping cart heading
+msgid "Your Cart"
+msgstr "Your Cart"
+
+#: src/components/Cart.svelte:10
+msgid "Checkout"
+msgstr "Checkout"
+
+#: src/components/Cart.svelte:15
+#. Message shown when cart is empty
+msgid "Your cart is empty"
+msgstr "Your cart is empty"
+
+#: src/components/Cart.svelte:20
+msgid "Continue Shopping"
+msgstr "Continue Shopping"
+
+#: src/components/Search.svelte:5
+#. Search input placeholder
+msgid "Search..."
+msgstr "Search..."
+
+#: src/components/Search.svelte:10
+msgid "No results found"
+msgstr "No results found"
+
+#: src/components/Notifications.svelte:5
+#. Notification for new message
+msgid "You have a new message"
+msgstr "You have a new message"
+
+#: src/components/Notifications.svelte:10
+msgid "Mark all as read"
+msgstr "Mark all as read"
