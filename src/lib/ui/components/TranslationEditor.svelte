@@ -9,8 +9,13 @@
 		MapPin,
 		CircleCheck,
 		CircleAlert,
-		CircleDashed
+		CircleDashed,
+		Flag,
+		FlagOff,
+		MessageSquareText,
+		Info
 	} from '@lucide/svelte';
+	import { triggerRefresh } from '../stores/refresh-signal.svelte';
 
 	interface Translation {
 		msgid: string;
@@ -21,6 +26,7 @@
 			reference?: string;
 			translator?: string;
 			extracted?: string;
+			flag?: string;
 		};
 	}
 
@@ -38,6 +44,7 @@
 	let saving = $state<string | null>(null);
 	let editingId = $state<string | null>(null);
 	let editValue = $state('');
+	let togglingFuzzy = $state<string | null>(null);
 
 	// Derived filtered translations
 	let filteredTranslations = $derived.by(() => {
@@ -144,6 +151,9 @@
 				translations[index] = { ...translations[index], msgstr: editValue };
 			}
 
+			// Notify the language list to refresh stats
+			triggerRefresh();
+
 			cancelEdit();
 		} catch (e) {
 			alert(e instanceof Error ? e.message : 'Failed to save');
@@ -159,6 +169,42 @@
 		}
 		if (e.key === 'Escape') {
 			cancelEdit();
+		}
+	}
+
+	async function toggleFuzzy(t: Translation) {
+		togglingFuzzy = t.msgid;
+
+		try {
+			const res = await fetch(`./api/translations/${language}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					msgid: t.msgid,
+					msgstr: t.msgstr,
+					context: t.context,
+					fuzzy: !t.fuzzy
+				})
+			});
+
+			const result = await res.json();
+
+			if (!result.success) {
+				throw new Error(result.error || 'Failed to toggle fuzzy status');
+			}
+
+			// Update local state
+			const index = translations.findIndex((tr) => tr.msgid === t.msgid);
+			if (index !== -1) {
+				translations[index] = { ...translations[index], fuzzy: !t.fuzzy };
+			}
+
+			// Notify the language list to refresh stats
+			triggerRefresh();
+		} catch (e) {
+			alert(e instanceof Error ? e.message : 'Failed to toggle fuzzy status');
+		} finally {
+			togglingFuzzy = null;
 		}
 	}
 
@@ -257,12 +303,58 @@
 									{/if}
 								</div>
 
+								<!-- Comments (translator notes, extracted comments) -->
+								{#if t.comments?.translator || t.comments?.extracted}
+									<div class="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-600 dark:bg-slate-800/50">
+										{#if t.comments.translator}
+											<div class="flex items-start gap-2 text-sm">
+												<MessageSquareText class="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+												<div>
+													<span class="font-medium text-slate-600 dark:text-slate-300">Translator note:</span>
+													<span class="ml-1 text-slate-700 dark:text-slate-200">{t.comments.translator}</span>
+												</div>
+											</div>
+										{/if}
+										{#if t.comments.extracted}
+											<div class="flex items-start gap-2 text-sm {t.comments.translator ? 'mt-2' : ''}">
+												<Info class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+												<div>
+													<span class="font-medium text-slate-600 dark:text-slate-300">Context:</span>
+													<span class="ml-1 text-slate-700 dark:text-slate-200">{t.comments.extracted}</span>
+												</div>
+											</div>
+										{/if}
+									</div>
+								{/if}
+
 								<!-- Translation -->
 								<div>
 									<div class="mb-1 flex items-center gap-2">
 										<span class="text-xs font-medium uppercase tracking-wide text-slate-400">Translation</span>
 										{#if t.fuzzy}
 											<span class="badge badge-warning">Fuzzy</span>
+										{/if}
+										<!-- Fuzzy toggle button -->
+										{#if t.msgstr}
+											<button
+												type="button"
+												class="ml-auto flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors {t.fuzzy 
+													? 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50' 
+													: 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'}"
+												onclick={() => toggleFuzzy(t)}
+												disabled={togglingFuzzy === t.msgid}
+												title={t.fuzzy ? 'Mark as not fuzzy' : 'Mark as fuzzy (needs review)'}
+											>
+												{#if togglingFuzzy === t.msgid}
+													<LoaderCircle class="h-3 w-3 animate-spin" />
+												{:else if t.fuzzy}
+													<FlagOff class="h-3 w-3" />
+													<span>Unflag</span>
+												{:else}
+													<Flag class="h-3 w-3" />
+													<span>Mark fuzzy</span>
+												{/if}
+											</button>
 										{/if}
 									</div>
 

@@ -90,6 +90,13 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 						return;
 					}
 
+					// Handle favicon.ico requests with an empty response to prevent 404
+					if (req.url === '/favicon.ico') {
+						res.statusCode = 204;
+						res.end();
+						return;
+					}
+
 					// Skip API routes (handled by separate middleware)
 					if (req.url?.startsWith('/api')) {
 						return next();
@@ -102,6 +109,13 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 			} else {
 				// Development mode: serve a simple placeholder
 				server.middlewares.use(cleanRoute, (req, res, next) => {
+					// Handle favicon.ico requests with an empty response to prevent 404
+					if (req.url === '/favicon.ico') {
+						res.statusCode = 204;
+						res.end();
+						return;
+					}
+
 					if (req.url?.startsWith('/api')) {
 						return next();
 					}

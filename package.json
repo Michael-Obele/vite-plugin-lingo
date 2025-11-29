@@ -9,10 +9,12 @@
 		"url": "git+https://github.com/Michael-Obele/vite-plugin-lingo.git"
 	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "bun run build:ui && concurrently -n main,ui -c blue,green \"vite dev\" \"vite build --config vite.ui.config.ts --watch\"",
+		"dev:simple": "vite dev",
 		"dev:ui": "vite --config vite.ui.config.ts",
 		"build": "bun run build:svelte && bun run build:plugin && bun run build:ui && publint",
 		"build:ui": "vite build --config vite.ui.config.ts",
+		"build:ui:watch": "vite build --config vite.ui.config.ts --watch",
 		"build:svelte": "svelte-kit sync && svelte-package",
 		"build:plugin": "tsup",
 		"package": "svelte-kit sync && svelte-package && publint",
@@ -73,6 +75,7 @@
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.17",
 		"@vitest/browser-playwright": "^4.0.10",
+		"concurrently": "^9.2.1",
 		"playwright": "^1.56.1",
 		"prettier": "^3.6.2",
 		"prettier-plugin-svelte": "^3.4.0",

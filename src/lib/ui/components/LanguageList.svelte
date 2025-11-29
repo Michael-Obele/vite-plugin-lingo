@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Languages, RefreshCw, LoaderCircle, TriangleAlert, FolderOpen } from '@lucide/svelte';
+	import { getRefreshCount } from '../stores/refresh-signal.svelte';
 
 	interface LanguageStats {
 		code: string;
@@ -21,6 +22,15 @@
 
 	onMount(async () => {
 		await loadLanguages();
+	});
+
+	// Auto-refresh when translations are updated
+	$effect(() => {
+		const count = getRefreshCount();
+		// Skip the initial mount (count is 0)
+		if (count > 0) {
+			loadLanguages();
+		}
 	});
 
 	async function loadLanguages() {
