@@ -21,17 +21,11 @@ msgstr ""
 msgid "Welcome to our website"
 msgstr "Bienvenido a nuestro sitio web"
 
+# Please keep the {name} placeholder as-is
 #: src/components/Header.svelte:10
 #. Personalized greeting with user's name
-# Please keep the {name} placeholder as-is
 msgid "Hello, {name}!"
 msgstr "¡Hola, {name}!"
-
-#: src/components/Navigation.svelte:3
-#. @wc-context: navigation
-msgctxt "navigation"
-msgid "Home"
-msgstr "Inicio"
 
 #: src/components/Navigation.svelte:4
 msgid "About"
@@ -57,9 +51,9 @@ msgstr "Blog"
 msgid "Pricing"
 msgstr ""
 
+# Keep the {year} placeholder
 #: src/components/Footer.svelte:2
 #. Footer copyright notice - {year} will be replaced with current year
-# Keep the {year} placeholder
 msgid "Copyright {year} All rights reserved."
 msgstr "Derechos de autor {year} Todos los derechos reservados."
 
@@ -80,9 +74,9 @@ msgstr "Enviar"
 msgid "Cancel"
 msgstr "Cancelar"
 
+# Shown when user enters invalid email format
 #: src/components/Form.svelte:15
 #. Email validation error message
-# Shown when user enters invalid email format
 #, fuzzy
 msgid "Please enter a valid email address"
 msgstr "Por favor ingrese una dirección de correo válida"
@@ -96,15 +90,9 @@ msgstr "La contraseña debe tener al menos 8 caracteres"
 msgid "Your message has been sent successfully!"
 msgstr "¡Tu mensaje ha sido enviado exitosamente!"
 
-#: src/components/Dashboard.svelte:5
-#. @wc-context: dashboard
-msgctxt "dashboard"
-msgid "Home"
-msgstr "Panel"
-
+# Different from homepage welcome
 #: src/components/Dashboard.svelte:10
 #. Dashboard welcome message - shown when user logs in
-# Different from homepage welcome
 msgid "Welcome back!"
 msgstr "¡Bienvenido de nuevo!"
 
@@ -156,3 +144,16 @@ msgstr "Tienes un nuevo mensaje"
 #: src/components/Notifications.svelte:10
 msgid "Mark all as read"
 msgstr ""
+
+#: src/components/Navigation.svelte:3
+#. @wc-context: navigation
+msgctxt "navigation"
+msgid "Home"
+msgstr "Inicio"
+
+#: src/components/Dashboard.svelte:5
+#. @wc-context: dashboard
+#, fuzzy
+msgctxt "dashboard"
+msgid "Home"
+msgstr "Panel"
