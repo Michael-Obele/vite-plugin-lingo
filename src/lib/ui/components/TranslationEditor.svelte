@@ -171,63 +171,63 @@
 
 <div class="flex flex-1 flex-col overflow-hidden">
 	<!-- Stats bar -->
-	<div class="flex items-center gap-6 border-b border-slate-200 bg-white px-6 py-3">
+	<div class="flex items-center gap-6 border-b border-slate-200 bg-white px-6 py-3 dark:border-slate-700 dark:bg-slate-800">
 		<div class="flex items-center gap-2">
-			<span class="text-2xl font-semibold text-slate-900">{stats.total}</span>
-			<span class="text-sm text-slate-500">Total</span>
+			<span class="text-2xl font-semibold text-slate-900 dark:text-white">{stats.total}</span>
+			<span class="text-sm text-slate-500 dark:text-slate-400">Total</span>
 		</div>
 		<div class="flex items-center gap-2">
 			<CircleCheck class="h-4 w-4 text-emerald-500" />
-			<span class="font-medium text-emerald-600">{stats.translated}</span>
-			<span class="text-sm text-slate-500">Translated</span>
+			<span class="font-medium text-emerald-600 dark:text-emerald-400">{stats.translated}</span>
+			<span class="text-sm text-slate-500 dark:text-slate-400">Translated</span>
 		</div>
 		<div class="flex items-center gap-2">
 			<CircleDashed class="h-4 w-4 text-red-400" />
-			<span class="font-medium text-red-600">{stats.untranslated}</span>
-			<span class="text-sm text-slate-500">Untranslated</span>
+			<span class="font-medium text-red-600 dark:text-red-400">{stats.untranslated}</span>
+			<span class="text-sm text-slate-500 dark:text-slate-400">Untranslated</span>
 		</div>
 		<div class="flex items-center gap-2">
 			<CircleAlert class="h-4 w-4 text-amber-500" />
-			<span class="font-medium text-amber-600">{stats.fuzzy}</span>
-			<span class="text-sm text-slate-500">Fuzzy</span>
+			<span class="font-medium text-amber-600 dark:text-amber-400">{stats.fuzzy}</span>
+			<span class="text-sm text-slate-500 dark:text-slate-400">Fuzzy</span>
 		</div>
-		<div class="ml-auto text-sm text-slate-500">
+		<div class="ml-auto text-sm text-slate-500 dark:text-slate-400">
 			Showing {filteredTranslations.length} of {stats.total}
 		</div>
 	</div>
 
 	<!-- Content -->
 	{#if loading}
-		<div class="flex flex-1 flex-col items-center justify-center gap-3 text-slate-500">
+		<div class="flex flex-1 flex-col items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
 			<LoaderCircle class="h-8 w-8 animate-spin text-blue-500" />
 			<span>Loading translations...</span>
 		</div>
 	{:else if error}
 		<div class="flex flex-1 flex-col items-center justify-center gap-4">
 			<TriangleAlert class="h-10 w-10 text-red-400" />
-			<p class="text-red-600">{error}</p>
+			<p class="text-red-600 dark:text-red-400">{error}</p>
 			<button type="button" class="btn btn-secondary" onclick={loadTranslations}>
 				Retry
 			</button>
 		</div>
 	{:else if filteredTranslations.length === 0}
-		<div class="flex flex-1 flex-col items-center justify-center gap-3 text-slate-500">
-			<FileText class="h-10 w-10 text-slate-300" />
+		<div class="flex flex-1 flex-col items-center justify-center gap-3 text-slate-500 dark:text-slate-400">
+			<FileText class="h-10 w-10 text-slate-300 dark:text-slate-600" />
 			<p class="font-medium">No translations found</p>
 			{#if searchQuery || filter !== 'all'}
-				<p class="text-sm text-slate-400">Try adjusting your search or filter</p>
+				<p class="text-sm text-slate-400 dark:text-slate-500">Try adjusting your search or filter</p>
 			{/if}
 		</div>
 	{:else}
 		<div class="flex-1 overflow-y-auto">
-			<div class="divide-y divide-slate-100">
+			<div class="divide-y divide-slate-100 dark:divide-slate-700">
 				{#each filteredTranslations as t (t.msgid)}
 					{@const status = getStatusIcon(t)}
 					<div
-						class="group px-6 py-4 transition-colors hover:bg-slate-50 {t.fuzzy
-							? 'bg-amber-50/50'
+						class="group px-6 py-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 {t.fuzzy
+							? 'bg-amber-50/50 dark:bg-amber-900/10'
 							: !t.msgstr
-								? 'bg-red-50/30'
+								? 'bg-red-50/30 dark:bg-red-900/10'
 								: ''}"
 					>
 						<div class="flex gap-4">
@@ -246,11 +246,11 @@
 											<span class="badge badge-secondary text-xs">ctx: {t.context}</span>
 										{/if}
 									</div>
-									<code class="block rounded bg-slate-100 px-3 py-2 text-sm text-slate-800">
+									<code class="block rounded bg-slate-100 px-3 py-2 text-sm text-slate-800 dark:bg-slate-700 dark:text-slate-200">
 										{t.msgid}
 									</code>
 									{#if t.comments?.reference}
-										<div class="mt-1 flex items-center gap-1 text-xs text-slate-400">
+										<div class="mt-1 flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
 											<MapPin class="h-3 w-3" />
 											{t.comments.reference}
 										</div>
@@ -295,7 +295,7 @@
 													<X class="h-4 w-4" />
 													Cancel
 												</button>
-												<span class="ml-2 text-xs text-slate-400">
+												<span class="ml-2 text-xs text-slate-400 dark:text-slate-500">
 													Enter to save, Esc to cancel
 												</span>
 											</div>
@@ -304,13 +304,13 @@
 										<!-- Display mode -->
 										<button
 											type="button"
-											class="group/edit flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-slate-100"
+											class="group/edit flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
 											onclick={() => startEdit(t)}
 										>
 											{#if t.msgstr}
-												<span class="flex-1 text-sm text-slate-800">{t.msgstr}</span>
+												<span class="flex-1 text-sm text-slate-800 dark:text-slate-200">{t.msgstr}</span>
 											{:else}
-												<span class="flex-1 text-sm italic text-slate-400">Click to add translation</span>
+												<span class="flex-1 text-sm italic text-slate-400 dark:text-slate-500">Click to add translation</span>
 											{/if}
 											<Pencil class="h-4 w-4 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover/edit:opacity-100" />
 										</button>

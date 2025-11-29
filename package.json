@@ -104,6 +104,7 @@
 		"@types/gettext-parser": "^8.0.0",
 		"autoprefixer": "^10.4.22",
 		"gettext-parser": "^8.0.0",
+		"mode-watcher": "^1.1.0",
 		"sirv": "^3.0.2"
 	}
 }

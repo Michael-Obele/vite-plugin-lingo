@@ -4,6 +4,18 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lingo Translation Editor</title>
+		<script>
+			// Prevent FOUC by setting theme before page renders
+			(function() {
+				const stored = localStorage.getItem('mode-watcher-mode');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const theme = stored ? JSON.parse(stored) : (prefersDark ? 'dark' : 'light');
+				if (theme === 'dark' || (theme === 'system' && prefersDark)) {
+					document.documentElement.classList.add('dark');
+				}
+				document.documentElement.style.colorScheme = theme === 'dark' || (theme === 'system' && prefersDark) ? 'dark' : 'light';
+			})();
+		</script>
 	</head>
 	<body>
 		<div id="app"></div>

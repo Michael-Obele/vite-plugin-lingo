@@ -17,9 +17,9 @@
 	});
 
 	let textColor = $derived.by(() => {
-		if (percentage >= 90) return 'text-emerald-600';
-		if (percentage >= 50) return 'text-amber-600';
-		return 'text-red-600';
+		if (percentage >= 90) return 'text-emerald-600 dark:text-emerald-400';
+		if (percentage >= 50) return 'text-amber-600 dark:text-amber-400';
+		return 'text-red-600 dark:text-red-400';
 	});
 
 	let heightClass = $derived.by(() => {
@@ -35,7 +35,7 @@
 </script>
 
 <div class="flex items-center gap-2">
-	<div class="flex-1 overflow-hidden rounded-full bg-slate-200 {heightClass}">
+	<div class="flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700 {heightClass}">
 		<div
 			class="h-full transition-all duration-300 {barColor}"
 			style="width: {percentage}%"

@@ -36,18 +36,18 @@
 		type="text"
 		bind:value={query}
 		placeholder="Search translations..."
-		class="h-9 w-72 rounded-lg border border-slate-300 bg-white pl-9 pr-16 text-sm shadow-sm transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+		class="h-9 w-72 rounded-lg border border-slate-300 bg-white pl-9 pr-16 text-sm shadow-sm transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-blue-400"
 	/>
 	{#if query}
 		<button
 			type="button"
-			class="absolute right-3 rounded p-0.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+			class="absolute right-3 rounded p-0.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
 			onclick={() => (query = '')}
 		>
 			<X class="h-4 w-4" />
 		</button>
 	{:else}
-		<kbd class="absolute right-3 flex items-center gap-0.5 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs text-slate-500">
+		<kbd class="absolute right-3 flex items-center gap-0.5 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs text-slate-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400">
 			<span class="text-[10px]">⌘</span>K
 		</kbd>
 	{/if}

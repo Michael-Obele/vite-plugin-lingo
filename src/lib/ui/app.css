@@ -13,30 +13,30 @@
 	}
 
 	body {
-		@apply bg-slate-50 text-slate-900 antialiased;
+		@apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100;
 	}
 }
 
 /* Custom component styles */
 @layer components {
 	.btn {
-		@apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:focus-visible:ring-offset-slate-900;
 	}
 
 	.btn-primary {
-		@apply bg-blue-600 text-white hover:bg-blue-700;
+		@apply bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600;
 	}
 
 	.btn-secondary {
-		@apply bg-slate-100 text-slate-900 hover:bg-slate-200;
+		@apply bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700;
 	}
 
 	.btn-ghost {
-		@apply hover:bg-slate-100;
+		@apply hover:bg-slate-100 dark:hover:bg-slate-800;
 	}
 
 	.input {
-		@apply flex h-9 w-full rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
+		@apply flex h-9 w-full rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500;
 	}
 
 	.badge {
@@ -44,18 +44,18 @@
 	}
 
 	.badge-success {
-		@apply bg-emerald-100 text-emerald-700;
+		@apply bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400;
 	}
 
 	.badge-warning {
-		@apply bg-amber-100 text-amber-700;
+		@apply bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400;
 	}
 
 	.badge-danger {
-		@apply bg-red-100 text-red-700;
+		@apply bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400;
 	}
 
 	.card {
-		@apply rounded-lg border border-slate-200 bg-white shadow-sm;
+		@apply rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800;
 	}
 }
