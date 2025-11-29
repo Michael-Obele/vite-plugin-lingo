@@ -51,6 +51,7 @@
 		"svelte": "^5.43.8",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.17",
+		"tsup": "^8.5.1",
 		"typescript": "^5.9.3",
 		"vite": "^7.2.2",
 		"vitest": "^4.0.10",
@@ -58,5 +59,9 @@
 	},
 	"keywords": [
 		"svelte"
-	]
+	],
+	"dependencies": {
+		"gettext-parser": "^8.0.0",
+		"sirv": "^3.0.2"
+	}
 }
