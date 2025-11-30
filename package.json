@@ -23,14 +23,14 @@
 		"package": "svelte-kit sync && svelte-package && publint",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"prepack": "svelte-kit sync && svelte-package && publint",
+		"prepack": "bun run build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-		"prepublishOnly": "bun run build"
+		"prepublishOnly": "echo 'Build will run via prepack'"
 	},
 	"files": [
 		"dist",

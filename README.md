@@ -208,58 +208,36 @@ vite-plugin-lingo/
 
 ## 📤 Publishing to npm
 
-### Prerequisites
+> 📚 **For detailed publishing instructions, see [PUBLISHING.md](./PUBLISHING.md)**
 
-1. An [npm account](https://www.npmjs.com/signup)
-2. npm CLI logged in: `npm login`
-
-### Step-by-Step Publishing Guide
+### Quick Publishing Guide
 
 ```bash
-# 1. Ensure you're on main branch with clean working tree
-git checkout main
-git pull origin main
-git status  # Should be clean
+# 1. Login to npm (first time only)
+npm login
 
-# 2. Update version in package.json
-# Choose appropriate version bump:
-npm version patch  # 0.0.1 -> 0.0.2 (bug fixes)
-npm version minor  # 0.0.1 -> 0.1.0 (new features)
-npm version major  # 0.0.1 -> 1.0.0 (breaking changes)
-
-# 3. Build and verify the package
+# 2. Build and verify
 bun run build
 
-# 4. Preview what will be published
-npm pack --dry-run
+# 3. Bump version
+npm version patch  # or minor/major
 
-# 5. Publish to npm
-npm publish --access public
+# 4. Publish
+npm publish
 
-# 6. Push version tag to GitHub
-git push origin main --tags
+# 5. Push tags
+git push && git push --tags
 ```
 
-### Verify Publication
+### Quick Reference
 
-```bash
-# Check package on npm
-npm view vite-plugin-lingo
-
-# Test installation in a new project
-mkdir test-install && cd test-install
-npm init -y
-npm install vite-plugin-lingo
-```
-
-### Troubleshooting Publishing
-
-| Issue | Solution |
-|-------|----------|
-| "You must be logged in" | Run `npm login` |
-| "Package name already exists" | Change `name` in `package.json` |
-| "Version already exists" | Bump version with `npm version` |
-| "Missing main entry" | Check `files` field includes `dist` |
+| Command | Description |
+|---------|-------------|
+| `npm version patch` | Bug fixes (0.0.1 → 0.0.2) |
+| `npm version minor` | New features (0.0.2 → 0.1.0) |
+| `npm version major` | Breaking changes (0.1.0 → 1.0.0) |
+| `npm publish` | Publish to npm registry |
+| `npm pack --dry-run` | Preview what will be published |
 
 ## 🤝 Contributing
 
