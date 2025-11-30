@@ -11,7 +11,8 @@ export default defineConfig({
 		// Use the plugin for development testing
 		lingo({
 			route: '/_translations',
-			localesDir: './locales'
+			localesDir: './locales',
+			production: true  // ⚠️ Add authentication!
 		})
 	],
 	optimizeDeps: {

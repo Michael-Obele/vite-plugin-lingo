@@ -13,7 +13,10 @@
 		ChevronDown,
 		FileCode,
 		Layout,
-		Languages
+		Languages,
+		AlertTriangle,
+		Shield,
+		Server
 	} from '@lucide/svelte';
 	import Highlight from 'svelte-highlight';
 	import typescript from 'svelte-highlight/languages/typescript';
@@ -57,7 +60,8 @@ export default defineConfig({
   plugins: [
     lingo({
       route: '/_translations', // default
-      localesDir: './locales'  // default
+      localesDir: './locales', // default
+      production: false        // enable in production builds
     })
   ]
 });`;
@@ -317,6 +321,28 @@ export default defineConfig({
 							</div>
 							<div class="overflow-x-auto p-4 text-sm bg-white dark:bg-[#0D1117]">
 								<Highlight language={typescript} code={configCode} />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Production Mode Info -->
+				<div class="mt-12 rounded-2xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800/50 dark:bg-amber-900/20">
+					<div class="flex items-start gap-4">
+						<div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+							<Server class="w-5 h-5" />
+						</div>
+						<div class="flex-1">
+							<h3 class="text-lg font-bold text-amber-900 dark:text-amber-100 mb-2">Production Deployment</h3>
+							<p class="text-amber-800 dark:text-amber-200 text-sm leading-relaxed mb-4">
+								By default, the translation editor only runs in development mode. 
+								To enable it in production builds (e.g., for deployment to Netlify, Vercel, etc.), set <code class="px-1.5 py-0.5 bg-amber-200 dark:bg-amber-800 rounded text-amber-900 dark:text-amber-100 font-mono text-xs">production: true</code> in your config.
+							</p>
+							<div class="flex items-start gap-2 p-3 rounded-lg bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700">
+								<AlertTriangle class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+								<p class="text-amber-800 dark:text-amber-200 text-xs leading-relaxed">
+									<strong>Security Notice:</strong> Built-in authentication is planned for a future release. For now, if you enable production mode, you'll need to implement your own authentication layer to protect the editor route, or wait for the upcoming auth feature. Use with caution — anyone with access can modify your translation files.
+								</p>
 							</div>
 						</div>
 					</div>
