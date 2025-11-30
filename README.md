@@ -1,58 +1,288 @@
-# Svelte library
+# 🌍 vite-plugin-lingo
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+A **Vite plugin** that provides a visual editor for `.po` (Gettext) translation files. Designed to work seamlessly with [wuchale](https://wuchale.dev/) and other i18n solutions.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+[![npm version](https://img.shields.io/npm/v/vite-plugin-lingo.svg)](https://www.npmjs.com/package/vite-plugin-lingo)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-## Creating a project
+## ✨ Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- 🎨 **Visual Translation Editor** - Browse and edit `.po` files in a beautiful web UI
+- 📊 **Language Overview** - See all locales with translation progress at a glance
+- 🔍 **Search & Filter** - Find translations by text, filter by status
+- ⌨️ **Keyboard Shortcuts** - Ctrl+S save, arrow keys navigate
+- 🔄 **HMR Support** - Live reload when `.po` files change
+- 🛠️ **Framework Agnostic** - Works with React, Vue, Svelte, SolidJS, or any Vite-powered project
+- 🎯 **wuchale Integration** - Auto-detect config and `.po` locations
 
-```sh
-# create a new project in the current directory
-npx sv create
+## 📦 Installation
 
-# create a new project in my-app
-npx sv create my-app
+```bash
+# npm
+npm install vite-plugin-lingo --save-dev
+
+# pnpm
+pnpm add -D vite-plugin-lingo
+
+# bun (recommended)
+bun add -d vite-plugin-lingo
+
+# yarn
+yarn add -D vite-plugin-lingo
 ```
 
-## Developing
+## 🚀 Quick Start
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### 1. Add to your Vite config
 
-```sh
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import lingo from 'vite-plugin-lingo';
+
+export default defineConfig({
+  plugins: [
+    lingo({
+      route: '/_translations',  // Route where editor UI is served
+      localesDir: './locales',  // Path to .po files
+    })
+  ]
+});
+```
+
+### 2. Create your locales directory
+
+```
+your-project/
+├── locales/
+│   ├── en.po
+│   ├── es.po
+│   └── fr.po
+├── src/
+└── vite.config.ts
+```
+
+### 3. Start your dev server
+
+```bash
+bun run dev
+# or
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+### 4. Open the translation editor
 
-## Building
+Navigate to `http://localhost:5173/_translations` to access the visual editor.
 
-To build your library:
+## ⚙️ Configuration Options
 
-```sh
-npm pack
+```ts
+lingo({
+  // Route where editor UI is served (default: '/_translations')
+  route: '/_translations',
+
+  // Path to .po files relative to project root (default: './locales')
+  localesDir: './locales',
+
+  // Enable in production (default: false)
+  // ⚠️ Only enable with proper authentication!
+  production: false,
+})
 ```
 
-To create a production version of your showcase app:
+## 📖 API Reference
 
-```sh
-npm run build
+### Plugin Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `route` | `string` | `'/_translations'` | URL path where the editor is served |
+| `localesDir` | `string` | `'./locales'` | Directory containing `.po` files |
+| `production` | `boolean` | `false` | Enable editor in production builds |
+
+### Exported Types
+
+```ts
+import type { 
+  PluginOptions,
+  Translation,
+  Language,
+  LanguageStats 
+} from 'vite-plugin-lingo';
 ```
 
-You can preview the production build with `npm run preview`.
+## 🔧 How It Works
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```sh
-npm publish
 ```
+┌─────────────────────────────────────────────────────────┐
+│                    Vite Dev Server                       │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐    ┌─────────────────────────────┐ │
+│  │ Your App        │    │ vite-plugin-lingo           │ │
+│  │ (React/Svelte/  │    │ ├─ Middleware (/_translations)│
+│  │  Vue/Solid)     │    │ ├─ API (GET/PUT /api/*)     │ │
+│  │                 │    │ ├─ Editor UI (Svelte SPA)   │ │
+│  │                 │    │ └─ File Watcher (.po files) │ │
+│  └─────────────────┘    └─────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────┐
+                    │  .po Files      │
+                    │  └─ locales/    │
+                    │     ├─ en.po    │
+                    │     ├─ es.po    │
+                    │     └─ fr.po    │
+                    └─────────────────┘
+```
+
+## 📁 .po File Format
+
+The plugin works with standard Gettext `.po` files:
+
+```po
+# English translations
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: src/components/Header.svelte:5
+msgid "Welcome to our website"
+msgstr "Welcome to our website"
+
+#: src/components/Header.svelte:10
+msgid "Hello, {name}!"
+msgstr "Hello, {name}!"
+```
+
+## 🛠️ Development
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) (recommended) or Node.js 18+
+- Git
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Michael-Obele/vite-plugin-lingo.git
+cd vite-plugin-lingo
+
+# Install dependencies
+bun install
+
+# Start development server
+bun run dev
+
+# Build the plugin
+bun run build
+
+# Run type checking
+bun run check
+
+# Run tests
+bun run test
+```
+
+### Project Structure
+
+```
+vite-plugin-lingo/
+├── src/
+│   ├── lib/
+│   │   ├── plugin/          # Vite plugin source
+│   │   │   ├── index.ts     # Main plugin entry
+│   │   │   ├── middleware.ts # API endpoints
+│   │   │   ├── po-parser.ts # .po file parser
+│   │   │   └── types.ts     # TypeScript types
+│   │   └── ui/              # Editor UI (Svelte)
+│   │       ├── App.svelte   # Main editor component
+│   │       └── components/  # UI components
+│   └── routes/              # Demo/showcase app
+├── locales/                 # Sample .po files
+├── dist/                    # Built output
+└── package.json
+```
+
+## 📤 Publishing to npm
+
+### Prerequisites
+
+1. An [npm account](https://www.npmjs.com/signup)
+2. npm CLI logged in: `npm login`
+
+### Step-by-Step Publishing Guide
+
+```bash
+# 1. Ensure you're on main branch with clean working tree
+git checkout main
+git pull origin main
+git status  # Should be clean
+
+# 2. Update version in package.json
+# Choose appropriate version bump:
+npm version patch  # 0.0.1 -> 0.0.2 (bug fixes)
+npm version minor  # 0.0.1 -> 0.1.0 (new features)
+npm version major  # 0.0.1 -> 1.0.0 (breaking changes)
+
+# 3. Build and verify the package
+bun run build
+
+# 4. Preview what will be published
+npm pack --dry-run
+
+# 5. Publish to npm
+npm publish --access public
+
+# 6. Push version tag to GitHub
+git push origin main --tags
+```
+
+### Verify Publication
+
+```bash
+# Check package on npm
+npm view vite-plugin-lingo
+
+# Test installation in a new project
+mkdir test-install && cd test-install
+npm init -y
+npm install vite-plugin-lingo
+```
+
+### Troubleshooting Publishing
+
+| Issue | Solution |
+|-------|----------|
+| "You must be logged in" | Run `npm login` |
+| "Package name already exists" | Change `name` in `package.json` |
+| "Version already exists" | Bump version with `npm version` |
+| "Missing main entry" | Check `files` field includes `dist` |
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+[AGPL-3.0](LICENSE) © [Michael-Obele](https://github.com/Michael-Obele)
+
+This is a copyleft license that requires anyone who distributes your code or a derivative work to make the source available under the same terms.
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/Michael-Obele/vite-plugin-lingo)
+- [npm Package](https://www.npmjs.com/package/vite-plugin-lingo)
+- [Issue Tracker](https://github.com/Michael-Obele/vite-plugin-lingo/issues)
+
+---
+
+**Made with ❤️ for the i18n community**
