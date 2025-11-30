@@ -16,6 +16,7 @@
 		"dev:simple": "vite dev",
 		"dev:ui": "vite --config vite.ui.config.ts",
 		"build": "bun run build:svelte && bun run build:plugin && bun run build:ui && publint",
+		"build:netlify": "vite build",
 		"build:ui": "vite build --config vite.ui.config.ts",
 		"build:ui:watch": "vite build --config vite.ui.config.ts --watch",
 		"build:svelte": "svelte-kit sync && svelte-package",
@@ -71,6 +72,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/adapter-netlify": "^5.2.4",
 		"@sveltejs/kit": "^2.48.5",
 		"@sveltejs/package": "^2.5.6",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
@@ -92,7 +94,6 @@
 		"vite": "^7.2.2",
 		"vitest": "^4.0.10",
 		"vitest-browser-svelte": "^2.0.1"
-
 	},
 	"keywords": [
 		"vite-plugin",
