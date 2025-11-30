@@ -9,5 +9,14 @@ describe('/+page.svelte', () => {
 		
 		const heading = page.getByRole('heading', { level: 1 });
 		await expect.element(heading).toBeInTheDocument();
+		await expect.element(heading).toHaveTextContent('Translation management');
+	});
+
+	it('should render open editor link', async () => {
+		render(Page);
+		
+		const link = page.getByRole('link', { name: 'Open Editor' });
+		await expect.element(link).toBeInTheDocument();
+		await expect.element(link).toHaveAttribute('href', '/_translations');
 	});
 });
