@@ -3,8 +3,9 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import { Globe, Github } from '@lucide/svelte';
 	import ThemeToggle from '$lib/ui/components/ThemeToggle.svelte';
+	import type { LayoutProps } from './$types.js';
 
-	let { children } = $props();
+	let { data, children }: LayoutProps = $props();
 </script>
 
 <ModeWatcher />
@@ -22,7 +23,7 @@
 					<Github class="w-5 h-5" />
 				</a>
 				<a href="https://www.npmjs.com/package/vite-plugin-lingo" target="_blank" rel="noreferrer" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-white">
-					v0.0.1
+					v{data.npmVersion}
 				</a>
                 <!--  -->
                 <ThemeToggle/>
