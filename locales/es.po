@@ -105,6 +105,7 @@ msgid "Settings"
 msgstr "Configuración"
 
 #: src/components/Dashboard.svelte:25
+#, fuzzy
 msgid "Log out"
 msgstr "Cerrar sesión"
 

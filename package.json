@@ -8,6 +8,9 @@
 		"type": "git",
 		"url": "git+https://github.com/Michael-Obele/vite-plugin-lingo.git"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"dev": "bun run build:ui && concurrently -n main,ui -c blue,green \"vite dev\" \"vite build --config vite.ui.config.ts --watch\"",
 		"dev:simple": "vite dev",
@@ -89,6 +92,7 @@
 		"vite": "^7.2.2",
 		"vitest": "^4.0.10",
 		"vitest-browser-svelte": "^2.0.1"
+
 	},
 	"keywords": [
 		"vite-plugin",
@@ -108,6 +112,7 @@
 		"autoprefixer": "^10.4.22",
 		"gettext-parser": "^8.0.0",
 		"mode-watcher": "^1.1.0",
-		"sirv": "^3.0.2"
+		"sirv": "^3.0.2",
+		"svelte-highlight": "^7.9.0"
 	}
 }

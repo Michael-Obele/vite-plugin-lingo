@@ -14,6 +14,9 @@ export default defineConfig({
 			localesDir: './locales'
 		})
 	],
+	optimizeDeps: {
+		exclude: ['lightningcss']
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
