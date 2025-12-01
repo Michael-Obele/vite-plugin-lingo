@@ -23,5 +23,11 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Auth database
+auth.db
+auth.db-journal
+
+# Better Auth migrations (keep in repo for reference)
+# /better-auth_migrations
 
 /plan

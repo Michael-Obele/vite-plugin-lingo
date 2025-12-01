@@ -2,15 +2,12 @@
 	"extends": "./.svelte-kit/tsconfig.json",
 	"exclude": ["/node_modules/*"],
 	"compilerOptions": {
-		"rewriteRelativeImportExtensions": true,
 		"allowJs": true,
 		"checkJs": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext"
+		"strict": true
 	}
 }
