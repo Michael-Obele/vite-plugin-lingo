@@ -1,0 +1,55 @@
+name: 'Release with semantic-release'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: |
+          # Install dev dependencies required by semantic-release
+          npm install --silent --no-audit --no-fund -D semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/npm
+          bun install
+
+      - name: Build
+        run: bun run package
+
+      - name: Run semantic-release (dry-run if NPM_TOKEN not configured)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional token; if present, semantic-release will use the token, otherwise the step will rely on OIDC.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Ensure that verified provenance will be requested by npm if supported
+          NPM_CONFIG_PROVENANCE: true
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "NPM_TOKEN is not set; running semantic-release in dry-run (no publish).";
+            npx semantic-release --dry-run;
+          else
+            npx semantic-release;
+          fi

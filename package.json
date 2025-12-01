@@ -31,6 +31,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
 		"prepublishOnly": "echo 'Build will run via prepack'"
+		,
+		"release": "semantic-release"
 	},
 	"files": [
 		"dist",
