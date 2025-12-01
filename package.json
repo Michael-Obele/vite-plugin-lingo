@@ -9,7 +9,8 @@
 		"url": "git+https://github.com/Michael-Obele/vite-plugin-lingo.git"
 	},
 	"publishConfig": {
-		"access": "public"
+		"access": "public",
+		"provenance": true
 	},
 	"scripts": {
 		"dev": "bun run build:ui && concurrently -n main,ui -c blue,green \"vite dev\" \"vite build --config vite.ui.config.ts --watch\"",

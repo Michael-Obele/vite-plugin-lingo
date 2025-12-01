@@ -242,6 +242,30 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
+      ### Automated Release with Provenance (OIDC)
+
+      This repository now supports automated, *trusted* publishing using npm Provenance (OIDC). The workflow is located at `.github/workflows/publish-provenance.yml` and:
+
+      - Triggers on `push` to `main` and looks for commit messages that contain `[patch]`, `[minor]`, or `[major]` to determine the new version.
+      - Uses Node.js 24 and upgrades npm to the latest version to avoid OIDC related 404s and ensure compatibility with provenance.
+      - Uses OIDC (no `NPM_TOKEN` required) to publish with `npm publish --provenance --access public`.
+      - Builds the package with Bun using `bun run package` which runs `svelte-package` and `publint`.
+
+      Key notes:
+
+      - The GitHub Action requires `permissions: id-token: write` and `contents: write` to create tags and releases and obtain an identity token for trusted publishing.
+      - We keep `publishConfig.provenance: true` in `package.json` so the provenance is enabled by default for consumers and CI.
+      - If you need to temporarily disable provenance (not recommended), set `publishConfig.provenance` to `false` or omit `--provenance` when publishing.
+
+      How to verify provenance after a publish:
+
+      1. Inspect the release and verify the package on npm via `npm view vite-plugin-lingo@<version>`.
+      2. Use the npm CLI to check attestations/signatures (some commands or portals display provenance/attestation metadata).
+      3. Confirm the GitHub release was created and matches the version tag created by the workflow.
+
+      If you need to test the workflow locally, trigger the action by pushing a commit on `main` that contains `[patch]`, `[minor]`, or `[major]` in its message. The workflow will bump the version, push the changes and publish. Alternatively, use a manual release workflow as a pre-check.
+
+
 ### Setting up npm Provenance (Recommended)
 
 npm provenance links your package to its source repository, increasing trust:
