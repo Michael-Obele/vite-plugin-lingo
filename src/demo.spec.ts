@@ -1,7 +1,3 @@
-import { describe, it, expect } from 'vitest';
-
-describe('sum test', () => {
-	it('adds 1 + 2 to equal 3', () => {
-		expect(1 + 2).toBe(3);
-	});
-});
+// Test removed — demo.spec.ts
+// Tests for this package have been intentionally removed.
+// If you need to add tests again, please add them under src/tests/ and update package.json accordingly.
