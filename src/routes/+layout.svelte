@@ -45,7 +45,7 @@
 				<a href="https://svelte.dev" class="hover:text-indigo-600 transition-colors dark:hover:text-indigo-400">Svelte</a>
 			</div>
 			<p class="text-sm text-slate-500 dark:text-slate-400">
-				MIT License © 2025
+				<a href="/LICENSE" class="hover:text-indigo-600 transition-colors dark:hover:text-indigo-400">AGPL-3.0-or-later</a> © 2025
 			</p>
 		</div>
 	</footer>
