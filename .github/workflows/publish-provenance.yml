@@ -89,12 +89,12 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add package.json package-lock.json || true
+          git add package.json bun.lockb || true
           git commit -m "chore(release): v${{ steps.new-version.outputs.version }}" || echo "No changes to commit"
           git push origin main || echo "Push failed"
 
       - name: Build package with Bun
-        run: bun run package
+        run: bun run build
 
       - name: Publish to npm with provenance
         run: npm publish --provenance --access public
