@@ -265,6 +265,14 @@ jobs:
 
       If you need to test the workflow locally, trigger the action by pushing a commit on `main` that contains `[patch]`, `[minor]`, or `[major]` in its message. The workflow will bump the version, push the changes and publish. Alternatively, use a manual release workflow as a pre-check.
 
+      Example commit messages that will trigger the automated release:
+
+      - Patch: `fix: correct typo in README [patch]`
+      - Minor: `feat: add new feature [minor]`
+      - Major: `BREAKING CHANGE: rework API [major]`
+
+      If you'd prefer to run releases manually, you can still use the classic approach (bump version locally, push, and create a release). The automated workflow aims to reduce friction for small maintenance bump releases.
+
 
 ### Setting up npm Provenance (Recommended)
 
