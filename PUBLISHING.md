@@ -273,6 +273,32 @@ jobs:
 
       If you'd prefer to run releases manually, you can still use the classic approach (bump version locally, push, and create a release). The automated workflow aims to reduce friction for small maintenance bump releases.
 
+      ### Automated changelog & release with semantic-release
+
+      We added `semantic-release` to this repository to automate changelog generation and publishing (changelog, GitHub release, npm publish). The configuration file is located at `.releaserc.json`. Key notes:
+
+      - `semantic-release` uses conventional commits to determine release types and release notes. Use `feat: ...` for minor features, `fix: ...` for patch fixes, and `BREAKING CHANGE:` in the commit body for major releases.
+      - The GitHub Action at `.github/workflows/semantic-release.yml` runs semantic-release on `main` and will:
+        - Build the package via `bun run package` (which runs `svelte-package` + `publint`)
+        - Run `npx semantic-release` which will create changelog entries, bump package.json, create a release and publish to npm via `@semantic-release/npm` plugin.
+      - If you use OIDC for trusted publishing, the workflow will automatically use the ID token when possible and will generate provenance statements; otherwise you can configure `NPM_TOKEN` in repo secrets. The workflow will run a dry-run if `NPM_TOKEN` is not configured to avoid accidental publishes.
+
+      Recommended commit message examples when using semantic-release:
+
+      - Patch: `fix: fix minor bug in parsing`
+      - Minor: `feat: add support for XYZ`
+      - Major: `refactor!: rework API; BREAKING CHANGE: changed plugin options`
+
+      If you'd like to publish manually (for a one-off release), you can still run:
+
+      ```bash
+      # Bump version
+      npm version patch
+      # Push and publish
+      git push && git push --tags && npm publish --access public
+      ```
+
+
 
 ### Setting up npm Provenance (Recommended)
 
