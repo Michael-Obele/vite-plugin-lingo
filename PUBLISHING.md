@@ -316,6 +316,16 @@ npm provenance links your package to its source repository, increasing trust:
 
 2. Publish from GitHub Actions with `--provenance` flag
 
+### Changelog management with semantic-release (changelog-only)
+
+We use `semantic-release` **only** to generate and maintain `CHANGELOG.md` (it does not publish to npm).
+
+- There is a `release-changelog` GitHub Actions workflow in `.github/workflows/release-changelog.yml` that runs after the `Automated Release with Provenance` workflow completes successfully.
+- `semantic-release` generates release notes and updates `CHANGELOG.md`, then commits and pushes the updated `CHANGELOG.md` back to `main` with `[skip ci]` in the commit message to avoid triggering CI loops.
+- `semantic-release` is configured to **not** run `@semantic-release/npm` or `@semantic-release/github` in this repo; those actions are handled by the `publish-provenance.yml` workflow.
+
+If you want to test the changelog workflow manually, use the `workflow_dispatch` option in the workflow or push a release commit that triggers the publisher (the changelog updater will then run as a follow-up).
+
 ## 📚 Additional Resources
 
 - [npm Documentation](https://docs.npmjs.com/)
