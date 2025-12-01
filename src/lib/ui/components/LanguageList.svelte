@@ -13,7 +13,12 @@
 		progress: number;
 	}
 
-	let { selected = $bindable<string | null>(null) }: { selected: string | null } = $props();
+	interface Props {
+		selected: string | null;
+		apiBase?: string;
+	}
+
+	let { selected = $bindable<string | null>(null), apiBase = '.' }: Props = $props();
 
 	let languages = $state<LanguageStats[]>([]);
 	let loading = $state(true);
@@ -41,7 +46,7 @@
 		error = null;
 
 		try {
-			const res = await fetch('./api/languages');
+			const res = await fetch(`${apiBase}/api/languages`);
 			const result = await res.json();
 
 			if (!result.success) {

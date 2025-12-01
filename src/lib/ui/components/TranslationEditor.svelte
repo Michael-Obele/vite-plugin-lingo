@@ -34,9 +34,10 @@
 		language: string;
 		searchQuery: string;
 		filter: 'all' | 'translated' | 'untranslated' | 'fuzzy';
+		apiBase?: string;
 	}
 
-	let { language, searchQuery, filter }: Props = $props();
+	let { language, searchQuery, filter, apiBase = '.' }: Props = $props();
 
 	let translations = $state<Translation[]>([]);
 	let loading = $state(true);
@@ -95,7 +96,7 @@
 		error = null;
 
 		try {
-			const res = await fetch(`./api/translations/${language}`);
+			const res = await fetch(`${apiBase}/api/translations/${language}`);
 			const result = await res.json();
 
 			if (!result.success) {
@@ -129,7 +130,7 @@
 		saving = t.msgid;
 
 		try {
-			const res = await fetch(`./api/translations/${language}`, {
+			const res = await fetch(`${apiBase}/api/translations/${language}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -176,7 +177,7 @@
 		togglingFuzzy = t.msgid;
 
 		try {
-			const res = await fetch(`./api/translations/${language}`, {
+			const res = await fetch(`${apiBase}/api/translations/${language}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
