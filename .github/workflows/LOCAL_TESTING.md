@@ -1,78 +1,214 @@
-# Testing GitHub Actions Workflows Locally
+# Testing GitHub Actions Workflows Locally with `act`
 
-This guide explains how to test GitHub Actions workflows locally before pushing to GitHub.
+This guide explains how to test GitHub Actions workflows locally using [`act`](https://github.com/nektos/act) before pushing to GitHub.
 
-## Prerequisites
+## What is `act`?
+
+`act` is a tool that runs your GitHub Actions locally using Docker containers. It simulates the GitHub Actions environment, allowing you to:
+- Test workflows before pushing
+- Debug CI/CD issues locally
+- Save time and GitHub Actions minutes
+
+## Installation
+
+### Prerequisites
+
+**Docker** must be installed and running:
+
+```bash
+# Ubuntu/Debian
+sudo apt update && sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Or install Docker Desktop from https://www.docker.com/products/docker-desktop
+```
 
 ### Install `act`
-
-[act](https://github.com/nektos/act) is a tool that lets you run GitHub Actions locally using Docker.
-
-**macOS:**
-```bash
-brew install act
-```
 
 **Linux:**
 ```bash
 curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
 ```
 
-**Using Go:**
+**macOS:**
 ```bash
-go install github.com/nektos/act@latest
+brew install act
 ```
 
-### Docker
+**Windows:**
+```bash
+winget install nektos.act
+# or
+choco install act-cli
+```
 
-You need Docker installed and running. Install Docker Desktop or Docker Engine.
+### Alternative: Install as GitHub CLI Extension
+
+If you already have [GitHub CLI](https://cli.github.com/) installed, you can install `act` as an extension:
+
+```bash
+# Install the gh-act extension
+gh extension install https://github.com/nektos/gh-act
+```
+
+After installation, use `gh act` instead of `act`:
+
+```bash
+# List workflows
+gh act -l
+
+# Dry run
+gh act -n -W .github/workflows/semantic-release.yml
+
+# Run with event
+gh act push -W .github/workflows/publish-provenance.yml
+```
+
+**Benefits:**
+- Easy integration with `gh auth token` for secrets
+- Single tool for all GitHub interactions
+- No separate installation needed if you already have `gh`
+
+**Note:** All commands in this guide work the same way - just prefix with `gh` (e.g., `act -l` becomes `gh act -l`).
+
+### Fix Docker Permissions (Linux)
+
+If you get "permission denied" errors:
+
+```bash
+# Add your user to the docker group
+sudo usermod -aG docker $USER
+
+# Apply changes (or log out and back in)
+newgrp docker
+```
+
+## Understanding `act -l` Output
+
+When you run `act -l`, you'll see something like:
+
+```
+INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock' 
+Stage  Job ID     Job name   Workflow name                      Workflow file           Events      
+0      release    release    Automated Release with Provenance  publish-provenance.yml  push        
+0      changelog  changelog  Release Changelog                  release-changelog.yml   workflow_run
+0      release    release    Release with semantic-release      semantic-release.yml    push        
+
+Detected multiple jobs with the same job name, use `-W` to specify the path to the specific workflow.
+```
+
+### What Each Column Means
+
+| Column | Description |
+|--------|-------------|
+| **Stage** | Execution order (0 = first, 1 = second, etc.) |
+| **Job ID** | The `jobs.<job_id>` from the workflow YAML |
+| **Job name** | The `jobs.<job_id>.name` or defaults to Job ID |
+| **Workflow name** | The `name:` at the top of the workflow file |
+| **Workflow file** | The filename in `.github/workflows/` |
+| **Events** | What triggers the workflow (push, pull_request, etc.) |
+
+### "Multiple Jobs with Same Name" Warning
+
+This warning appears when multiple workflow files have jobs with the same Job ID (e.g., "release"). This is:
+
+- ✅ **NOT an error** - just informational
+- ✅ **Normal** for projects with multiple release workflows
+- ✅ **Fine for GitHub Actions** - each workflow runs independently
+
+**Why it matters for `act`:** When you run `act` without specifying a workflow, it doesn't know which "release" job you want to run. The solution is simple - use the `-W` flag:
+
+```bash
+# Run a specific workflow
+act -W .github/workflows/semantic-release.yml
+```
 
 ## Basic Usage
 
-### List Available Jobs
+### List All Workflows and Jobs
 
 ```bash
-# List all workflows and jobs
 act -l
-
-# List jobs for a specific event
-act push -l
-act pull_request -l
 ```
 
-### Run Workflows
+### Dry Run (Recommended First Step)
+
+Test without actually executing - shows what would happen:
 
 ```bash
-# Run push event (default)
-act
-
-# Run specific event
-act push
-act pull_request
-act workflow_dispatch
+act -n -W .github/workflows/semantic-release.yml
 ```
 
-### Run Specific Job
+### Run a Specific Workflow
 
 ```bash
-# Run a specific job from a workflow
-act -j release
+# Run the semantic-release workflow
+act -W .github/workflows/semantic-release.yml
 
-# Run job from a specific workflow file
-act -j release -W .github/workflows/publish-provenance.yml
+# Run the publish-provenance workflow
+act -W .github/workflows/publish-provenance.yml
 ```
 
-## Testing publish-provenance.yml Locally
-
-### Dry Run (No Actual Execution)
+### Run a Specific Job
 
 ```bash
-act push -n -W .github/workflows/publish-provenance.yml
+# Run only the 'release' job from a specific workflow
+act -j release -W .github/workflows/semantic-release.yml
 ```
 
-### With Custom Commit Message (to trigger release)
+### Simulate Specific Events
 
-Create an event file `test-event.json`:
+```bash
+# Simulate a push event (default)
+act push -W .github/workflows/semantic-release.yml
+
+# Simulate a pull request
+act pull_request -W .github/workflows/my-workflow.yml
+
+# Simulate workflow_dispatch (manual trigger)
+act workflow_dispatch -W .github/workflows/my-workflow.yml
+```
+
+## Advanced Usage
+
+### Use Better Docker Images
+
+The default `act` image is minimal. Use larger images for better compatibility:
+
+```bash
+# Recommended: Medium image with more tools
+act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest -W .github/workflows/semantic-release.yml
+
+# Full image (larger, most compatible)
+act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:full-latest -W .github/workflows/semantic-release.yml
+```
+
+### Provide Secrets
+
+Create a `.secrets` file (add to `.gitignore`!):
+
+```
+GITHUB_TOKEN=ghp_your_token_here
+NPM_TOKEN=npm_your_token_here
+```
+
+Run with secrets:
+
+```bash
+act --secret-file .secrets -W .github/workflows/semantic-release.yml
+```
+
+Or inline:
+
+```bash
+act -s GITHUB_TOKEN=ghp_xxx -W .github/workflows/semantic-release.yml
+```
+
+### Custom Event Payload
+
+Create `test-event.json`:
+
 ```json
 {
   "head_commit": {
@@ -81,157 +217,149 @@ Create an event file `test-event.json`:
 }
 ```
 
-Run with the event:
+Run with custom event:
+
 ```bash
 act push -e test-event.json -W .github/workflows/publish-provenance.yml
 ```
 
-### With Secrets
-
-Create a `.secrets` file (add to .gitignore!):
-```
-GITHUB_TOKEN=your_github_token
-NPM_TOKEN=your_npm_token
-```
-
-Run with secrets:
-```bash
-act push --secret-file .secrets -W .github/workflows/publish-provenance.yml
-```
-
-### Using Better Docker Images
-
-The default act image is minimal. Use larger images for better compatibility:
+### Reuse Containers (Faster)
 
 ```bash
-# Medium image (recommended)
-act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
-
-# Full image (larger, more tools)
-act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:full-latest
+act -r -W .github/workflows/semantic-release.yml
 ```
 
-## Common act Options
+### Verbose Output
+
+```bash
+act -v -W .github/workflows/semantic-release.yml
+```
+
+## Common Options Reference
 
 | Option | Description |
 |--------|-------------|
-| `-l` | List all actions/jobs |
-| `-n` | Dry run (don't actually run) |
-| `-j <job>` | Run a specific job |
+| `-l` | List all workflows and jobs |
+| `-n` | Dry run (don't execute) |
 | `-W <path>` | Specify workflow file |
-| `-e <file>` | Event payload file |
+| `-j <job>` | Run specific job |
+| `-e <file>` | Event payload JSON file |
 | `-s KEY=VALUE` | Set a secret |
-| `--secret-file` | File with secrets |
+| `--secret-file <file>` | File with secrets |
 | `-P <platform>=<image>` | Custom Docker image |
-| `--verbose` | Verbose output |
-| `-r` | Reuse containers between runs |
-| `--container-architecture linux/amd64` | Force architecture |
+| `-v` | Verbose output |
+| `-r` | Reuse containers |
+| `--container-architecture` | Force architecture (e.g., `linux/amd64`) |
 
-## Testing Without Docker
+## Testing This Project's Workflows
 
-### Manual Build Test
+### Quick Validation
 
-Test that your build produces the expected files:
+```bash
+# List available workflows
+act -l
+
+# Dry-run semantic-release
+act -n -W .github/workflows/semantic-release.yml
+
+# Dry-run publish-provenance
+act -n -W .github/workflows/publish-provenance.yml
+```
+
+### Full Local Test
+
+```bash
+# Test semantic-release workflow
+act -W .github/workflows/semantic-release.yml -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+```
+
+### Test with Release Trigger
+
+```bash
+# Create event file
+echo '{"head_commit":{"message":"feat: test [patch]"}}' > /tmp/test-event.json
+
+# Run with event
+act push -e /tmp/test-event.json -W .github/workflows/publish-provenance.yml
+```
+
+## Manual Verification (No Docker)
+
+If Docker isn't available, manually verify your build:
 
 ```bash
 # Run the full build
 bun run build
 
 # Verify output files exist
-ls -la dist/plugin/
+ls dist/plugin/index.{js,cjs,d.ts,d.cts}
 
-# Expected files:
-# - index.js (ESM)
-# - index.cjs (CommonJS)
-# - index.d.ts (ESM types)
-# - index.d.cts (CommonJS types)
-```
-
-### Test Version Bump Logic
-
-```bash
-# Get current version
-node -p "require('./package.json').version"
-
-# Test npm version (dry-run style)
-npm version patch --no-git-tag-version
-git checkout package.json  # Reset
-```
-
-### Test Publish (Dry Run)
-
-```bash
-# Build first
-bun run build
-
-# Dry run publish
+# Test publish dry-run
 npm publish --dry-run
 ```
 
 ## Troubleshooting
 
-### "Cannot find module" Errors
+### "Permission denied" for Docker
 
-Ensure you're using a suitable Docker image:
 ```bash
-act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+sudo usermod -aG docker $USER
+newgrp docker
+# Or log out and back in
 ```
 
-### Bun Not Found
+### "Bun not found" in act
 
-The act images may not have Bun. You can:
-1. Use a custom Dockerfile
-2. Or test the workflow on GitHub with a non-release commit first
+The default act images don't include Bun. Our workflows use `oven-sh/setup-bun@v2` which installs it. If issues persist, use a larger image:
+
+```bash
+act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:full-latest -W .github/workflows/semantic-release.yml
+```
+
+### Slow First Run
+
+The first run downloads Docker images (~1-2GB). Subsequent runs are faster, especially with `-r` (reuse containers).
 
 ### Architecture Issues (Apple Silicon)
 
 ```bash
-act --container-architecture linux/amd64
+act --container-architecture linux/amd64 -W .github/workflows/semantic-release.yml
 ```
 
-### Missing Secrets
+## GitHub CLI Options
 
-For workflows requiring secrets, either:
-1. Provide them via `--secret-file`
-2. Skip steps that need secrets using `-j` to run specific jobs
-3. Use `act -n` for dry run
+### Option 1: Run Locally with `gh act` (Recommended)
 
-## CI Validation Steps
+If you installed act as a GitHub CLI extension (see [Installation](#alternative-install-as-github-cli-extension)), you can run workflows locally:
 
-Before pushing, manually verify:
+```bash
+# Run workflows locally using Docker
+gh act -l                                            # List workflows
+gh act -n -W .github/workflows/semantic-release.yml  # Dry run
+gh act push -W .github/workflows/semantic-release.yml # Full run
 
-1. **Build succeeds:**
-   ```bash
-   bun run build
-   ```
+# Easy secret injection with gh auth
+gh act -s GITHUB_TOKEN=$(gh auth token) -W .github/workflows/semantic-release.yml
+```
 
-2. **All expected files exist:**
-   ```bash
-   ls dist/plugin/index.{js,cjs,d.ts,d.cts}
-   ```
+### Option 2: Trigger on GitHub (Remote)
 
-3. **Publint passes:**
-   ```bash
-   bunx publint
-   ```
-
-4. **Package structure is correct:**
-   ```bash
-   bun pack --dry-run
-   ```
-
-## GitHub CLI Alternative
-
-You can also use GitHub CLI to manually trigger workflows:
+To trigger workflows directly on GitHub (not locally):
 
 ```bash
 # Authenticate
 gh auth login
 
-# Manually run a workflow
-gh workflow run publish-provenance.yml
+# Manually trigger a workflow
+gh workflow run semantic-release.yml
 
 # Check run status
 gh run list
 gh run view <run-id>
 ```
+
+**Key Difference:**
+| Method | Execution | Docker Required | GitHub Minutes Used |
+|--------|-----------|-----------------|---------------------|
+| `gh act` | Local machine | Yes | No |
+| `gh workflow run` | GitHub servers | No | Yes |
