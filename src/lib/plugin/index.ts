@@ -21,7 +21,7 @@ export type { PluginOptions, Translation, Language, LanguageStats } from './type
  *
  * @example
  * ```ts
- * // vite.config.ts
+ * // vite.config.ts (default setup)
  * import { defineConfig } from 'vite';
  * import lingo from 'vite-plugin-lingo';
  *
@@ -30,6 +30,22 @@ export type { PluginOptions, Translation, Language, LanguageStats } from './type
  *     lingo({
  *       route: '/_translations',
  *       localesDir: './locales'
+ *     })
+ *   ]
+ * });
+ * ```
+ *
+ * @example
+ * ```ts
+ * // vite.config.ts (SvelteKit convention)
+ * import { defineConfig } from 'vite';
+ * import lingo from 'vite-plugin-lingo';
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     lingo({
+ *       route: '/_translations',
+ *       localesDir: './src/locales'  // Common in SvelteKit
  *     })
  *   ]
  * });

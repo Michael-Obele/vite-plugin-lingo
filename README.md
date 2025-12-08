@@ -50,15 +50,27 @@ export default defineConfig({
 });
 ```
 
+> **Note for SvelteKit users**: If your locales are in `src/locales/` (common SvelteKit convention), use:
+> ```ts
+> lingo({
+>   route: '/_translations',
+>   localesDir: './src/locales',  // Common in SvelteKit projects
+> })
+> ```
+
 ### 2. Create your locales directory
 
 ```
 your-project/
-├── locales/
+├── locales/           # Default location
 │   ├── en.po
 │   ├── es.po
 │   └── fr.po
 ├── src/
+│   └── locales/       # Alternative: SvelteKit convention
+│       ├── en.po
+│       ├── es.po
+│       └── fr.po
 └── vite.config.ts
 ```
 
@@ -82,6 +94,8 @@ lingo({
   route: '/_translations',
 
   // Path to .po files relative to project root (default: './locales')
+  // For SvelteKit projects, commonly './src/locales'
+  // For other frameworks, './locales' at project root is typical
   localesDir: './locales',
 
   // Enable in production (default: false)
@@ -97,7 +111,7 @@ lingo({
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `route` | `string` | `'/_translations'` | URL path where the editor is served |
-| `localesDir` | `string` | `'./locales'` | Directory containing `.po` files |
+| `localesDir` | `string` | `'./locales'` | Directory containing `.po` files. For SvelteKit projects, commonly `'./src/locales'`. Relative to project root. |
 | `production` | `boolean` | `false` | Enable editor in production builds |
 
 ### Exported Types
@@ -109,6 +123,72 @@ import type {
   Language,
   LanguageStats 
 } from 'vite-plugin-lingo';
+```
+
+## 🎯 Framework Examples
+
+### SvelteKit
+
+SvelteKit projects commonly place locales in the `src/` directory:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import lingo from 'vite-plugin-lingo';
+
+export default defineConfig({
+  plugins: [
+    lingo({
+      route: '/_translations',
+      localesDir: './src/locales',  // SvelteKit convention
+    })
+  ]
+});
+```
+
+Project structure:
+```
+sveltekit-project/
+├── src/
+│   ├── locales/           # ← Locales directory
+│   │   ├── en.po
+│   │   ├── es.po
+│   │   └── fr.po
+│   ├── routes/
+│   └── app.html
+├── vite.config.ts
+└── svelte.config.js
+```
+
+### React/Vite
+
+Standard Vite projects typically use the root-level `locales/` directory:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import lingo from 'vite-plugin-lingo';
+
+export default defineConfig({
+  plugins: [
+    lingo({
+      route: '/_translations',
+      localesDir: './locales',  // Default location
+    })
+  ]
+});
+```
+
+Project structure:
+```
+vite-react-project/
+├── locales/               # ← Locales directory
+│   ├── en.po
+│   ├── es.po
+│   └── fr.po
+├── src/
+├── index.html
+└── vite.config.ts
 ```
 
 ## 🔧 How It Works
