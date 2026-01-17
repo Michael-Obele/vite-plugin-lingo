@@ -52,6 +52,9 @@ jobs:
       - name: Install dependencies with Bun
         run: bun install
 
+      - name: Sync version with npm
+        run: npm run sync-version || echo "Package not found on npm yet"
+
       - name: Determine version bump type
         id: bump-type
         run: |
@@ -107,7 +110,8 @@ jobs:
           git config --local user.name "GitHub Action"
           git add package.json bun.lockb || true
           git commit -m "chore(release): v${{ steps.new-version.outputs.version }}" || echo "No changes to commit"
-          git push origin main || echo "Push failed"
+          git pull --rebase origin main
+          git push origin main
 
       - name: Build package with Bun
         run: bun run build
