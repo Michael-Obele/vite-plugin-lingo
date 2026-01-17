@@ -4,10 +4,25 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Override bump type'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   release:
-    if: contains(github.event.head_commit.message, '[patch]') || contains(github.event.head_commit.message, '[minor]') || contains(github.event.head_commit.message, '[major]')
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[patch]') || 
+      contains(github.event.head_commit.message, '[minor]') || 
+      contains(github.event.head_commit.message, '[major]')
     runs-on: ubuntu-latest
 
     permissions:
@@ -41,7 +56,9 @@ jobs:
       - name: Determine version bump type
         id: bump-type
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"[major]"* ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "type=${{ github.event.inputs.bump }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.head_commit.message }}" == *"[major]"* ]]; then
             echo "type=major" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.head_commit.message }}" == *"[minor]"* ]]; then
             echo "type=minor" >> $GITHUB_OUTPUT
