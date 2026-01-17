@@ -1,17 +1,18 @@
 import { po } from 'gettext-parser';
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
+import { readFile, writeFile, readdir } from 'fs/promises';
+import { existsSync } from 'fs';
 import { join, basename } from 'path';
 import type { Translation, Language, LanguageStats } from './types.js';
 
 /**
  * Parse a .po file and extract translations
  */
-export function parsePoFile(filePath: string): Translation[] {
+export async function parsePoFile(filePath: string): Promise<Translation[]> {
 	if (!existsSync(filePath)) {
 		throw new Error(`File not found: ${filePath}`);
 	}
 
-	const content = readFileSync(filePath);
+	const content = await readFile(filePath);
 	const parsed = po.parse(content);
 
 	const translations: Translation[] = [];
@@ -47,12 +48,12 @@ export function parsePoFile(filePath: string): Translation[] {
 /**
  * Save translations back to a .po file
  */
-export function savePoFile(filePath: string, updates: Translation[]): void {
+export async function savePoFile(filePath: string, updates: Translation[]): Promise<void> {
 	if (!existsSync(filePath)) {
 		throw new Error(`File not found: ${filePath}`);
 	}
 
-	const content = readFileSync(filePath);
+	const content = await readFile(filePath);
 	const parsed = po.parse(content);
 
 	for (const update of updates) {
@@ -75,58 +76,60 @@ export function savePoFile(filePath: string, updates: Translation[]): void {
 	}
 
 	const compiled = po.compile(parsed);
-	writeFileSync(filePath, compiled);
+	await writeFile(filePath, compiled);
 }
 
 /**
  * Update a single translation
  */
-export function updateTranslation(
+export async function updateTranslation(
 	filePath: string,
 	msgid: string,
 	msgstr: string,
 	context?: string
-): void {
-	savePoFile(filePath, [{ msgid, msgstr, context }]);
+): Promise<void> {
+	await savePoFile(filePath, [{ msgid, msgstr, context }]);
 }
 
 /**
  * Find all .po files in a directory
  */
-export function findPoFiles(localesDir: string): Language[] {
+export async function findPoFiles(localesDir: string): Promise<Language[]> {
 	if (!existsSync(localesDir)) {
 		return [];
 	}
 
-	const files = readdirSync(localesDir).filter((f) => f.endsWith('.po'));
+	const files = (await readdir(localesDir)).filter((f) => f.endsWith('.po'));
 
-	return files.map((file) => {
-		const filePath = join(localesDir, file);
-		const code = basename(file, '.po');
-		const translations = parsePoFile(filePath);
+	return Promise.all(
+		files.map(async (file) => {
+			const filePath = join(localesDir, file);
+			const code = basename(file, '.po');
+			const translations = await parsePoFile(filePath);
 
-		const translated = translations.filter((t) => t.msgstr && !t.fuzzy).length;
-		const fuzzy = translations.filter((t) => t.fuzzy).length;
+			const translated = translations.filter((t) => t.msgstr && !t.fuzzy).length;
+			const fuzzy = translations.filter((t) => t.fuzzy).length;
 
-		return {
-			code,
-			name: getLanguageName(code),
-			path: filePath,
-			translations,
-			progress: {
-				total: translations.length,
-				translated,
-				fuzzy
-			}
-		};
-	});
+			return {
+				code,
+				name: getLanguageName(code),
+				path: filePath,
+				translations,
+				progress: {
+					total: translations.length,
+					translated,
+					fuzzy
+				}
+			};
+		})
+	);
 }
 
 /**
  * Get language statistics for all languages
  */
-export function getLanguageStats(localesDir: string): LanguageStats[] {
-	const languages = findPoFiles(localesDir);
+export async function getLanguageStats(localesDir: string): Promise<LanguageStats[]> {
+	const languages = await findPoFiles(localesDir);
 
 	return languages.map((lang) => ({
 		code: lang.code,

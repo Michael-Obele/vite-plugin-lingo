@@ -24,7 +24,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			return json({ success: false, error: 'msgstr is required' }, { status: 400 });
 		}
 
-		updateTranslation(filePath, msgid, body.msgstr, body.context);
+		await updateTranslation(filePath, msgid, body.msgstr, body.context);
 
 		return json({ success: true, message: 'Translation updated' });
 	} catch (error) {

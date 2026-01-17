@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const lang = url.searchParams.get('lang');
 
 		const localesDir = resolve(process.cwd(), LOCALES_DIR);
-		const languages = findPoFiles(localesDir);
+		const languages = await findPoFiles(localesDir);
 		const results: SearchResult[] = [];
 
 		for (const language of languages) {

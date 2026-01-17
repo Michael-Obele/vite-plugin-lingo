@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url';
 import sirv from 'sirv';
 import type { PluginOptions } from './types.js';
 import { createApiMiddleware } from './middleware.js';
-import { findPoFiles } from './po-parser.js';
 
 // Compute __dirname for ESM (CJS already has it)
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -76,12 +75,12 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 			// When running from source (dev): __dirnameComputed is src/lib/plugin, UI is at dist/ui-dist
 			// When running from dist (published): __dirnameComputed is dist/plugin, UI is at ../ui-dist
 			let uiPath = resolve(__dirnameComputed, '../ui-dist');
-			
+
 			// If not found relative to __dirname, try from project root
 			if (!existsSync(uiPath)) {
 				uiPath = resolve(root, 'dist/ui-dist');
 			}
-			
+
 			console.log('[lingo] Looking for UI at:', uiPath);
 			console.log('[lingo] UI exists:', existsSync(uiPath));
 
@@ -98,9 +97,11 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 					// When mounted at /path, req.url is already stripped of the prefix
 					// But the browser URL matters for relative path resolution
 					const reqWithOriginal = req as typeof req & { originalUrl?: string };
-					if ((req.url === '/' || req.url === '') && 
-					    reqWithOriginal.originalUrl && 
-					    !reqWithOriginal.originalUrl.endsWith('/')) {
+					if (
+						(req.url === '/' || req.url === '') &&
+						reqWithOriginal.originalUrl &&
+						!reqWithOriginal.originalUrl.endsWith('/')
+					) {
 						res.writeHead(302, { Location: cleanRoute + '/' });
 						res.end();
 						return;
@@ -247,7 +248,9 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 			const originalPrintUrls = server.printUrls;
 			server.printUrls = () => {
 				originalPrintUrls?.();
-				console.log(`  \x1b[32m➜\x1b[0m  \x1b[1mLingo:\x1b[0m ${protocol}://${hostString}:${port}${cleanRoute}`);
+				console.log(
+					`  \x1b[32m➜\x1b[0m  \x1b[1mLingo:\x1b[0m ${protocol}://${hostString}:${port}${cleanRoute}`
+				);
 			};
 		}
 	};

@@ -54,11 +54,7 @@ function sendError(res: ServerResponse, message: string, statusCode = 500): void
 export function createApiMiddleware(options: MiddlewareOptions) {
 	const { localesDir } = options;
 
-	return async (
-		req: IncomingMessage,
-		res: ServerResponse,
-		next: () => void
-	): Promise<void> => {
+	return async (req: IncomingMessage, res: ServerResponse, next: () => void): Promise<void> => {
 		const url = new URL(req.url || '/', `http://${req.headers.host}`);
 		const path = url.pathname;
 		const method = req.method?.toUpperCase();
@@ -78,7 +74,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 		try {
 			// GET /api/languages - List all languages with stats
 			if (path === '/languages' && method === 'GET') {
-				const stats = getLanguageStats(localesDir);
+				const stats = await getLanguageStats(localesDir);
 				sendJson(res, { success: true, data: stats });
 				return;
 			}
@@ -90,7 +86,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 				const filePath = join(localesDir, `${langCode}.po`);
 
 				try {
-					const translations = parsePoFile(filePath);
+					const translations = await parsePoFile(filePath);
 					sendJson(res, { success: true, data: translations });
 				} catch (error) {
 					sendError(res, `Language not found: ${langCode}`, 404);
@@ -106,7 +102,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 				try {
 					const body = await parseBody<Translation | Translation[]>(req);
 					const updates = Array.isArray(body) ? body : [body];
-					savePoFile(filePath, updates);
+					await savePoFile(filePath, updates);
 					sendJson(res, { success: true, message: 'Translations updated' });
 				} catch (error) {
 					sendError(res, error instanceof Error ? error.message : 'Failed to update', 400);
@@ -123,7 +119,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 
 				try {
 					const body = await parseBody<{ msgstr: string; context?: string }>(req);
-					updateTranslation(filePath, msgid, body.msgstr, body.context);
+					await updateTranslation(filePath, msgid, body.msgstr, body.context);
 					sendJson(res, { success: true, message: 'Translation updated' });
 				} catch (error) {
 					sendError(res, error instanceof Error ? error.message : 'Failed to update', 400);
@@ -136,7 +132,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 				const query = url.searchParams.get('q')?.toLowerCase() || '';
 				const lang = url.searchParams.get('lang');
 
-				const languages = findPoFiles(localesDir);
+				const languages = await findPoFiles(localesDir);
 				const results: Array<{
 					lang: string;
 					msgid: string;

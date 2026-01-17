@@ -9,7 +9,7 @@ const LOCALES_DIR = process.env.LINGO_LOCALES_DIR || './locales';
 export const GET: RequestHandler = async () => {
 	try {
 		const localesDir = resolve(process.cwd(), LOCALES_DIR);
-		const stats = getLanguageStats(localesDir);
+		const stats = await getLanguageStats(localesDir);
 		return json({ success: true, data: stats });
 	} catch (error) {
 		console.error('[lingo] Error getting languages:', error);

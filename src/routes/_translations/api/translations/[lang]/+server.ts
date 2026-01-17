@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ params }) => {
 			return json({ success: false, error: `Language not found: ${lang}` }, { status: 404 });
 		}
 
-		const translations = parsePoFile(filePath);
+		const translations = await parsePoFile(filePath);
 		return json({ success: true, data: translations });
 	} catch (error) {
 		console.error('[lingo] Error getting translations:', error);
@@ -45,7 +45,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		const body = await request.json();
 		const updates: Translation[] = Array.isArray(body) ? body : [body];
 
-		savePoFile(filePath, updates);
+		await savePoFile(filePath, updates);
 
 		return json({ success: true, message: 'Translations updated' });
 	} catch (error) {
