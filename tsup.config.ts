@@ -6,6 +6,7 @@ export default defineConfig({
 	format: ['esm', 'cjs'],
 	dts: true,
 	clean: false,
+	shims: true,
 	sourcemap: true,
 	external: ['vite', 'fs', 'path', 'url'],
 	platform: 'node',

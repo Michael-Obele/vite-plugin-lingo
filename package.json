@@ -1,6 +1,6 @@
 {
 	"name": "vite-plugin-lingo",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Visual translation editor for .po files in Vite projects",
 	"license": "AGPL-3.0-or-later",
 	"author": "Michael-Obele",
