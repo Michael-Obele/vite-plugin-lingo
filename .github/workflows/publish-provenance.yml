@@ -108,7 +108,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add package.json bun.lockb || true
+          git add package.json
+          if [ -f bun.lockb ]; then git add bun.lockb; fi
+          if [ -f bun.lock ]; then git add bun.lock; fi
           git commit -m "chore(release): v${{ steps.new-version.outputs.version }}" || echo "No changes to commit"
           git pull --rebase origin main
           git push origin main
