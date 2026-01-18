@@ -98,6 +98,14 @@ lingo({
   // For other frameworks, './locales' at project root is typical
   localesDir: './locales',
 
+  // Restart the dev server when a .po file is updated (default: false)
+  // Useful if another plugin (like wuchale) stops reacting to changes
+  restartOnPoChange: false,
+
+  // Trigger a full page reload when a .po file is updated (default: true)
+  // Ensured UI stays in sync with backend translation files
+  reloadOnPoChange: true,
+
   // Enable in production (default: false)
   // ⚠️ Only enable with proper authentication!
   production: false,

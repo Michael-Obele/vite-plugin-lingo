@@ -19,6 +19,12 @@ export interface PluginOptions {
 		provider: 'openai' | 'anthropic' | 'google';
 		apiKey?: string;
 	};
+
+	/** Restart the dev server when a .po file is updated (default: false) */
+	restartOnPoChange?: boolean;
+
+	/** Trigger a full page reload when a .po file is updated (default: true) */
+	reloadOnPoChange?: boolean;
 }
 
 /**

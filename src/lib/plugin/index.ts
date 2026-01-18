@@ -50,8 +50,14 @@ export type { PluginOptions, Translation, Language, LanguageStats } from './type
  * });
  * ```
  */
-export default function lingoPlugin(options: PluginOptions = {}): Plugin {
-	const { route = '/_translations', localesDir = './locales', production = false } = options;
+export default function lingoPlugin(options: PluginOptions = {}): any {
+	const {
+		route = '/_translations',
+		localesDir = './locales',
+		production = false,
+		restartOnPoChange = false,
+		reloadOnPoChange = true
+	} = options;
 
 	let root: string;
 	let resolvedLocalesDir: string;
@@ -62,9 +68,34 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 		// Only apply in serve mode (unless production is enabled)
 		apply: production ? undefined : 'serve',
 
-		configResolved(config) {
+		configResolved(config: any) {
 			root = config.root;
 			resolvedLocalesDir = resolve(root, localesDir);
+		},
+
+		handleHotUpdate({ file, server }: { file: string; server: ViteDevServer }) {
+			if (file.endsWith('.po')) {
+				console.log(`[lingo] .po file updated: ${file}`);
+
+				// Notify connected clients via WebSocket
+				server.ws.send({
+					type: 'custom',
+					event: 'lingo:po-updated',
+					data: { path: file }
+				});
+
+				if (restartOnPoChange) {
+					console.log('[lingo] Restarting dev server...');
+					server.restart();
+					return [];
+				}
+
+				if (reloadOnPoChange) {
+					console.log('[lingo] Triggering full page reload...');
+					server.ws.send({ type: 'full-reload' });
+					return [];
+				}
+			}
 		},
 
 		configureServer(server: ViteDevServer) {
@@ -217,29 +248,14 @@ export default function lingoPlugin(options: PluginOptions = {}): Plugin {
 				`${cleanRoute}/api`,
 				createApiMiddleware({
 					localesDir: resolvedLocalesDir,
-					root
+					root,
+					server
 				})
 			);
 
-			// Watch .po files for changes
-			const poGlob = join(resolvedLocalesDir, '**/*.po');
-			server.watcher.add(poGlob);
-
-			server.watcher.on('change', (path) => {
-				if (path.endsWith('.po')) {
-					// Notify connected clients via WebSocket
-					server.ws.send({
-						type: 'custom',
-						event: 'lingo:po-updated',
-						data: { path }
-					});
-
-					console.log(`[lingo] .po file updated: ${path}`);
-				}
-			});
-
 			// Log startup message
 			const port = server.config.server.port || 5173;
+
 			const protocol = server.config.server.https ? 'https' : 'http';
 			const host = server.config.server.host || 'localhost';
 			const hostString = typeof host === 'string' ? host : 'localhost';

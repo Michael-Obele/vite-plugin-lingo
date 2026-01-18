@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { join } from 'path';
+import type { ViteDevServer } from 'vite';
 import {
 	findPoFiles,
 	parsePoFile,
@@ -12,6 +13,7 @@ import type { Translation } from './types.js';
 interface MiddlewareOptions {
 	localesDir: string;
 	root: string;
+	server?: ViteDevServer;
 }
 
 /**
@@ -52,7 +54,7 @@ function sendError(res: ServerResponse, message: string, statusCode = 500): void
  * Create API middleware for handling translation operations
  */
 export function createApiMiddleware(options: MiddlewareOptions) {
-	const { localesDir } = options;
+	const { localesDir, server } = options;
 
 	return async (req: IncomingMessage, res: ServerResponse, next: () => void): Promise<void> => {
 		const url = new URL(req.url || '/', `http://${req.headers.host}`);
@@ -103,6 +105,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 					const body = await parseBody<Translation | Translation[]>(req);
 					const updates = Array.isArray(body) ? body : [body];
 					await savePoFile(filePath, updates);
+
 					sendJson(res, { success: true, message: 'Translations updated' });
 				} catch (error) {
 					sendError(res, error instanceof Error ? error.message : 'Failed to update', 400);
@@ -120,6 +123,7 @@ export function createApiMiddleware(options: MiddlewareOptions) {
 				try {
 					const body = await parseBody<{ msgstr: string; context?: string }>(req);
 					await updateTranslation(filePath, msgid, body.msgstr, body.context);
+
 					sendJson(res, { success: true, message: 'Translation updated' });
 				} catch (error) {
 					sendError(res, error instanceof Error ? error.message : 'Failed to update', 400);
