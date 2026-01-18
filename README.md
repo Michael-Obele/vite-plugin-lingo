@@ -98,17 +98,30 @@ lingo({
   // For other frameworks, './locales' at project root is typical
   localesDir: './locales',
 
+  // ⚠️ NUCLEAR OPTION - Only use if another plugin conflicts with .po file changes
   // Restart the dev server when a .po file is updated (default: false)
-  // Useful if another plugin (like wuchale) stops reacting to changes
+  // Advanced: Use this only when reloadOnPoChange is insufficient and another
+  // plugin (like wuchale) stops reacting to changes. Most users won't need this.
   restartOnPoChange: false,
 
   // Trigger a full page reload when a .po file is updated (default: true)
-  // Ensured UI stays in sync with backend translation files
+  // Ensures UI stays in sync with backend translation files
   reloadOnPoChange: true,
 
   // Enable in production (default: false)
   // ⚠️ Only enable with proper authentication!
   production: false,
+
+  // 🔒 PREMIUM FEATURE (Coming Soon)
+  // License key for premium features
+  // licenseKey: 'your-license-key',
+
+  // 🔒 PREMIUM FEATURE (Coming Soon)
+  // AI configuration for translation assistance
+  // ai: {
+  //   provider: 'openai' | 'anthropic' | 'google',
+  //   apiKey: 'your-api-key'
+  // },
 })
 ```
 
@@ -120,9 +133,103 @@ lingo({
 |--------|------|---------|-------------|
 | `route` | `string` | `'/_translations'` | URL path where the editor is served |
 | `localesDir` | `string` | `'./locales'` | Directory containing `.po` files. For SvelteKit projects, commonly `'./src/locales'`. Relative to project root. |
-| `production` | `boolean` | `false` | Enable editor in production builds |
+| `restartOnPoChange` | `boolean` | `false` | **Nuclear Option** ⚠️ - Only use when another plugin conflicts with `.po` file changes (e.g., wuchale). Restarts the dev server when a `.po` file is updated. Most users won't need this. |
+| `reloadOnPoChange` | `boolean` | `true` | Trigger a full page reload when a `.po` file is updated. Ensures UI stays in sync with backend translation files. |
+| `production` | `boolean` | `false` | Enable editor in production builds. ⚠️ Only enable with proper authentication! |
+| `licenseKey` | `string` | `undefined` | **Coming Soon** 🔒 - License key for premium features (not yet available). |
+| `ai` | `object` | `undefined` | **Coming Soon** 🔒 - AI configuration for translation assistance (not yet available). Will support `'openai'`, `'anthropic'`, or `'google'` as provider with optional `apiKey`. |
+
+### Premium Features (Coming Soon)
+
+The following premium features are currently in development and will be available in future releases:
+
+#### License Key System (`licenseKey`)
+- **Status**: Under development
+- **Purpose**: Enable premium features with license validation
+- **Expected**: Q1 2026
+
+#### AI-Powered Translation (`ai`)
+- **Status**: Under development
+- **Purpose**: Assist with translations using your preferred AI provider
+- **Supported Providers**: OpenAI, Anthropic, Google
+- **Expected**: Q1 2026
+
+### Advanced Configuration Notes
+
+#### `restartOnPoChange` - Nuclear Option
+This is an **advanced fallback option** that should only be used in specific situations:
+
+- ✅ **Use when**: Another plugin (like [wuchale](https://wuchale.dev/)) doesn't respond to `.po` file changes
+- ❌ **Don't use**: As your primary reload strategy (use `reloadOnPoChange` instead)
+- ⚠️ **Impact**: Full dev server restart is slower than page reload
+
+**Example scenario** where this might be needed:
+```ts
+lingo({
+  localesDir: './locales',
+  restartOnPoChange: true,  // Only if wuchale or other plugins conflict
+  reloadOnPoChange: false,   // Disable the default fast reload
+})
+```
+
+### Type Definitions
+
+#### PluginOptions
+Main configuration interface for the Vite plugin. See **Plugin Options** table above.
+
+#### Translation
+Represents a single translation entry in a `.po` file:
+
+```ts
+interface Translation {
+  msgid: string;                    // Message ID (original text)
+  msgstr: string;                   // Message string (translated text)
+  context?: string;                 // Optional context for disambiguation
+  comments?: {                      // Optional metadata
+    reference?: string;             // File reference where string is used
+    translator?: string;            // Translator notes
+    extracted?: string;             // Extracted comments
+    flag?: string;                  // Fuzzy or other flags
+  };
+  fuzzy?: boolean;                  // Whether translation is marked as fuzzy
+}
+```
+
+#### Language
+Represents a language with all its translations:
+
+```ts
+interface Language {
+  code: string;                     // Language code (e.g., 'en', 'es', 'fr')
+  name: string;                     // Language name (e.g., 'English', 'Spanish')
+  path: string;                     // Path to the .po file
+  translations: Translation[];       // Array of translation entries
+  progress: {
+    total: number;                  // Total number of strings
+    translated: number;             // Number of translated strings
+    fuzzy: number;                  // Number of fuzzy translations
+  };
+}
+```
+
+#### LanguageStats
+Statistics for language translation progress:
+
+```ts
+interface LanguageStats {
+  code: string;                     // Language code
+  name: string;                     // Language name
+  total: number;                    // Total number of strings
+  translated: number;               // Number of translated strings
+  fuzzy: number;                    // Number of fuzzy translations
+  untranslated: number;             // Number of untranslated strings
+  progress: number;                 // Progress percentage (0-100)
+}
+```
 
 ### Exported Types
+
+All types are exported from the main package:
 
 ```ts
 import type { 
