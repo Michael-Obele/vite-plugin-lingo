@@ -95,8 +95,14 @@
 		loading = true;
 		error = null;
 
+		// Create abort controller with 30 second timeout to prevent hanging requests
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 30000);
+
 		try {
-			const res = await fetch(`${apiBase}/api/translations/${language}`);
+			const res = await fetch(`${apiBase}/api/translations/${language}`, {
+				signal: controller.signal
+			});
 			const result = await res.json();
 
 			if (!result.success) {
@@ -105,8 +111,13 @@
 
 			translations = result.data || [];
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to load translations';
+			if (e instanceof Error && e.name === 'AbortError') {
+				error = 'Request timed out - API is slow or unreachable';
+			} else {
+				error = e instanceof Error ? e.message : 'Failed to load translations';
+			}
 		} finally {
+			clearTimeout(timeout);
 			loading = false;
 		}
 	}
@@ -129,6 +140,10 @@
 
 		saving = t.msgid;
 
+		// Create abort controller with 30 second timeout to prevent hanging requests
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 30000);
+
 		try {
 			const res = await fetch(`${apiBase}/api/translations/${language}`, {
 				method: 'PUT',
@@ -137,7 +152,8 @@
 					msgid: t.msgid,
 					msgstr: editValue,
 					context: t.context
-				})
+				}),
+				signal: controller.signal
 			});
 
 			const result = await res.json();
@@ -157,8 +173,10 @@
 
 			cancelEdit();
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to save');
+			const errorMsg = e instanceof Error ? (e.name === 'AbortError' ? 'Request timed out' : e.message) : 'Failed to save';
+			alert(errorMsg);
 		} finally {
+			clearTimeout(timeout);
 			saving = null;
 		}
 	}
@@ -176,6 +194,10 @@
 	async function toggleFuzzy(t: Translation) {
 		togglingFuzzy = t.msgid;
 
+		// Create abort controller with 30 second timeout to prevent hanging requests
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 30000);
+
 		try {
 			const res = await fetch(`${apiBase}/api/translations/${language}`, {
 				method: 'PUT',
@@ -185,7 +207,8 @@
 					msgstr: t.msgstr,
 					context: t.context,
 					fuzzy: !t.fuzzy
-				})
+				}),
+				signal: controller.signal
 			});
 
 			const result = await res.json();
@@ -203,8 +226,10 @@
 			// Notify the language list to refresh stats
 			triggerRefresh();
 		} catch (e) {
-			alert(e instanceof Error ? e.message : 'Failed to toggle fuzzy status');
+			const errorMsg = e instanceof Error ? (e.name === 'AbortError' ? 'Request timed out' : e.message) : 'Failed to toggle fuzzy status';
+			alert(errorMsg);
 		} finally {
+			clearTimeout(timeout);
 			togglingFuzzy = null;
 		}
 	}

@@ -30,13 +30,13 @@
 	});
 
 	// Auto-refresh when translations are updated
-	$effect(() => {
-		const count = getRefreshCount();
-		// Skip the initial mount (count is 0)
-		if (count > 0) {
-			loadLanguages();
-		}
-	});
+	// $effect(() => {
+	// 	const count = getRefreshCount();
+	// 	// Skip the initial mount (count is 0)
+	// 	if (count > 0) {
+	// 		loadLanguages();
+	// 	}
+	// });
 
 	async function loadLanguages() {
 		if (refreshing) return;
@@ -45,8 +45,14 @@
 		refreshing = true;
 		error = null;
 
+		// Create abort controller with 30 second timeout to prevent hanging requests
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 30000);
+
 		try {
-			const res = await fetch(`${apiBase}/api/languages`);
+			const res = await fetch(`${apiBase}/api/languages`, {
+				signal: controller.signal
+			});
 			const result = await res.json();
 
 			if (!result.success) {
@@ -55,8 +61,13 @@
 
 			languages = result.data || [];
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to load languages';
+			if (e instanceof Error && e.name === 'AbortError') {
+				error = 'Request timed out - API is slow or unreachable';
+			} else {
+				error = e instanceof Error ? e.message : 'Failed to load languages';
+			}
 		} finally {
+			clearTimeout(timeout);
 			loading = false;
 			refreshing = false;
 		}
