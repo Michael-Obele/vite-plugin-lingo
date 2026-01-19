@@ -29,14 +29,6 @@
 		await loadLanguages();
 	});
 
-	// Auto-refresh when translations are updated
-	// $effect(() => {
-	// 	const count = getRefreshCount();
-	// 	// Skip the initial mount (count is 0)
-	// 	if (count > 0) {
-	// 		loadLanguages();
-	// 	}
-	// });
 
 	async function loadLanguages() {
 		if (refreshing) return;
@@ -84,6 +76,8 @@
 		if (progress >= 50) return 'text-amber-600 dark:text-amber-400';
 		return 'text-red-600 dark:text-red-400';
 	}
+
+	// TODO: Auto-refresh when translations are updated, but efficiently
 </script>
 
 <div class="flex h-full flex-col">
