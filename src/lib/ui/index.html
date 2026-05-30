@@ -9,7 +9,7 @@
 			(function() {
 				const stored = localStorage.getItem('mode-watcher-mode');
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				const theme = stored ? JSON.parse(stored) : (prefersDark ? 'dark' : 'light');
+				const theme = stored || (prefersDark ? 'dark' : 'light');
 				if (theme === 'dark' || (theme === 'system' && prefersDark)) {
 					document.documentElement.classList.add('dark');
 				}
