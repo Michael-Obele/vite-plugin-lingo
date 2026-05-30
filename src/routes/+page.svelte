@@ -8,9 +8,6 @@
 		Terminal, 
 		ArrowRight, 
         Globe,
-		Check, 
-		Copy,
-		ChevronDown,
 		FileCode,
 		Layout,
 		Languages,
@@ -18,7 +15,6 @@
 		Shield,
 		Server
 	} from '@lucide/svelte';
-	import Highlight from 'svelte-highlight';
 	import typescript from 'svelte-highlight/languages/typescript';
 	import bash from 'svelte-highlight/languages/bash';
 	import githubDark from 'svelte-highlight/styles/github-dark';
@@ -26,6 +22,7 @@
 	import { mode } from 'mode-watcher';
 	import { fly, fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
+	import CodeBlock from '$lib/ui/components/CodeBlock.svelte';
 	
 
 	// State for copy buttons
@@ -251,39 +248,26 @@ export default defineConfig({
 							<p class="text-slate-600 mb-6 text-sm dark:text-slate-400">
 								Choose your package manager
 							</p>
+							<div class="relative mb-6">
+								<select
+									bind:value={selectedManager}
+									class="appearance-none rounded bg-transparent py-1 pr-8 pl-2 text-sm font-medium text-gray-700 transition outline-none hover:bg-gray-200 focus:ring-2 focus:ring-indigo-500 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer border border-gray-200 dark:border-gray-700 w-full"
+								>
+									<option value="bun">bun</option>
+									<option value="npm">npm</option>
+									<option value="pnpm">pnpm</option>
+									<option value="yarn">yarn</option>
+								</select>
+							</div>
 						</div>
 						
-						<div class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-[#0D1117] mx-6 mb-6">
-							<div class="flex items-center justify-between border-b border-gray-200 px-4 py-2 dark:border-gray-700">
-								<div class="relative">
-									<select
-										bind:value={selectedManager}
-										class="appearance-none rounded bg-transparent py-1 pr-8 pl-2 text-sm font-medium text-gray-700 transition outline-none hover:bg-gray-200 focus:ring-2 focus:ring-indigo-500 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
-									>
-										<option value="bun">bun</option>
-										<option value="npm">npm</option>
-										<option value="pnpm">pnpm</option>
-										<option value="yarn">yarn</option>
-									</select>
-									
-								</div>
-								<button
-									onclick={() => copyToClipboard(installCommand, 'install')}
-									class="inline-flex items-center gap-2 rounded px-3 py-1 text-sm text-gray-500 transition hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
-								>
-									{#if copiedStates.install}
-										<Check class="h-4 w-4 text-green-500" />
-										<span class="text-green-500">Copied!</span>
-									{:else}
-										<Copy class="h-4 w-4" />
-										<span>Copy</span>
-									{/if}
-								</button>
-							</div>
-							<div class="overflow-x-auto p-4 text-sm bg-white dark:bg-[#0D1117]">
-								<Highlight language={bash} code={installCommand} />
-							</div>
-						</div>
+						<CodeBlock 
+							code={installCommand} 
+							language={bash}
+							title="Install Command"
+							copied={copiedStates.install}
+							onCopy={() => copyToClipboard(installCommand, 'install')}
+						/>
 					</div>
 
 					<!-- Config -->
@@ -300,29 +284,14 @@ export default defineConfig({
 							</p>
 						</div>
 
-						<div class="relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-[#0D1117] mx-6 mb-6">
-							<div class="flex items-center justify-between border-b border-gray-200 px-4 py-2 dark:border-gray-700">
-								<span class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-									<FileCode class="h-4 w-4" />
-									vite.config.ts
-								</span>
-								<button
-									onclick={() => copyToClipboard(configCode, 'config')}
-									class="inline-flex items-center gap-2 rounded px-3 py-1 text-sm text-gray-500 transition hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
-								>
-									{#if copiedStates.config}
-										<Check class="h-4 w-4 text-green-500" />
-										<span class="text-green-500">Copied!</span>
-									{:else}
-										<Copy class="h-4 w-4" />
-										<span>Copy</span>
-									{/if}
-								</button>
-							</div>
-							<div class="overflow-x-auto p-4 text-sm bg-white dark:bg-[#0D1117]">
-								<Highlight language={typescript} code={configCode} />
-							</div>
-						</div>
+						<CodeBlock 
+							code={configCode} 
+							language={typescript}
+							title="vite.config.ts"
+							icon={FileCode}
+							copied={copiedStates.config}
+							onCopy={() => copyToClipboard(configCode, 'config')}
+						/>
 					</div>
 				</div>
 

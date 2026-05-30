@@ -5,17 +5,11 @@
 	import TranslationEditor from './components/TranslationEditor.svelte';
 	import SearchBar from './components/SearchBar.svelte';
 	import ThemeToggle from './components/ThemeToggle.svelte';
+	import { filterOptions, type FilterValue } from './stores/translation-editor.svelte';
 
 	let selectedLanguage = $state<string | null>(null);
 	let searchQuery = $state('');
-	let filter = $state<'all' | 'translated' | 'untranslated' | 'fuzzy'>('all');
-
-	const filterOptions = [
-		{ value: 'all', label: 'All' },
-		{ value: 'translated', label: 'Translated' },
-		{ value: 'untranslated', label: 'Untranslated' },
-		{ value: 'fuzzy', label: 'Fuzzy' }
-	] as const;
+	let filter = $state<FilterValue>('all');
 
 	// Listen for .po file updates via HMR
 	if (import.meta.hot) {

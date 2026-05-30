@@ -5,20 +5,14 @@
 	import TranslationEditor from '$lib/ui/components/TranslationEditor.svelte';
 	import SearchBar from '$lib/ui/components/SearchBar.svelte';
 	import ThemeToggle from '$lib/ui/components/ThemeToggle.svelte';
+	import { filterOptions, type FilterValue } from '$lib/ui/stores/translation-editor.svelte';
 	import type { PageData } from './$types.js';
 
 	let { data }: { data: PageData } = $props();
 
 	let selectedLanguage = $state<string | null>(null);
 	let searchQuery = $state('');
-	let filter = $state<'all' | 'translated' | 'untranslated' | 'fuzzy'>('all');
-
-	const filterOptions = [
-		{ value: 'all', label: 'All' },
-		{ value: 'translated', label: 'Translated' },
-		{ value: 'untranslated', label: 'Untranslated' },
-		{ value: 'fuzzy', label: 'Fuzzy' }
-	] as const;
+	let filter = $state<FilterValue>('all');
 </script>
 
 <svelte:head>
